@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "files": [
-            "src/Gendiff.php"
+            "src/Core.php"
         ]
     },
     "require": {
