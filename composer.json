@@ -1,0 +1,26 @@
+{
+    "name": "lubaro/gendiff",
+    "description": "Utility for finding differences in configuration files",
+    "type": "project",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LubaRo",
+            "email": "user.luyba@gmail.com"
+        }
+    ],
+    "bin": [
+        "bin/gendiff"
+    ],
+    "autoload": {
+        "files": [
+            "src/Gendiff.php"
+        ]
+    },
+    "require": {
+        "docopt/docopt": "^1.0"
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.5"
+    }
+}
