@@ -32,8 +32,12 @@ function run()
     $filePath1 = isset($data['<firstFile>']) ? $data['<firstFile>'] : '';
     $filePath2 = isset($data['<secondFile>']) ? $data['<secondFile>'] : '';
 
-    $file1 = file_get_contents($filePath1);
-    $file2 = file_get_contents($filePath2);
+    $file1 = getContent($filePath1);
+    $file2 = getContent($filePath2);
+
+    if (empty($file1) || empty($file2)) {
+        return;
+    }
 
     $fileContent1 = json_decode($file1, true);
     $fileContent2 = json_decode($file2, true);
@@ -111,4 +115,24 @@ function formatResult(array $diff)
     $str = Strings\toSentence($result, PHP_EOL, PHP_EOL);
 
     return $str;
+}
+
+function readFile($path)
+{
+    if (!file_exists($path)) {
+        throw new \Exception("File '${path}' doesn't exist\n");
+    }
+
+    return file_get_contents($path);
+}
+
+function getContent($path)
+{
+    try {
+        $content = readFile($path);
+        return $content;
+    } catch (\Exception $e) {
+        echo $e->getMessage();
+        return false;
+    }
 }
