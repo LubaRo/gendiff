@@ -14,7 +14,7 @@
     ],
     "autoload": {
         "files": [
-            "src/Core.php"
+            "src/GenDiff.php"
         ]
     },
     "require": {

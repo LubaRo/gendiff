@@ -1,6 +1,6 @@
 <?php
 
-namespace Gendiff\Core;
+namespace Differ\GenDiff;
 
 use Docopt;
 use Funct\Strings;
