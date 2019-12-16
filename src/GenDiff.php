@@ -32,23 +32,26 @@ function run()
     $filePath1 = isset($data['<firstFile>']) ? $data['<firstFile>'] : '';
     $filePath2 = isset($data['<secondFile>']) ? $data['<secondFile>'] : '';
 
-    $file1 = getContent($filePath1);
-    $file2 = getContent($filePath2);
-
-    if (empty($file1) || empty($file2)) {
-        return;
-    }
-
-    $fileContent1 = json_decode($file1, true);
-    $fileContent2 = json_decode($file2, true);
-
-    $diff = genDiff($fileContent1, $fileContent2);
-    $formatResult = formatResult($diff);
+    $formatResult = genDiff($filePath1, $filePath2);
 
     echo (PHP_EOL . $formatResult . PHP_EOL);
 }
 
-function genDiff($fileContent1, $fileContent2)
+function genDiff($filePath1, $filePath2)
+{
+    $file1 = getContent($filePath1);
+    $file2 = getContent($filePath2);
+
+    $fileContent1 = json_decode($file1, true);
+    $fileContent2 = json_decode($file2, true);
+
+    $diff = findDifference($fileContent1, $fileContent2);
+    $formatResult = formatResult($diff);
+
+    return $formatResult;
+}
+
+function findDifference($fileContent1, $fileContent2)
 {
     $result = array();
 
