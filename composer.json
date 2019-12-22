@@ -17,6 +17,9 @@
             "src/GenDiff.php"
         ]
     },
+    "scripts": {
+        "phpcs": "phpcs"
+    },
     "require": {
         "docopt/docopt": "^1.0",
         "funct/funct": "^1.5"
