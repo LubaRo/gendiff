@@ -39,11 +39,8 @@ function run()
 
 function genDiff($filePath1, $filePath2)
 {
-    $file1 = getContent($filePath1);
-    $file2 = getContent($filePath2);
-
-    $fileContent1 = json_decode($file1, true);
-    $fileContent2 = json_decode($file2, true);
+    $fileContent1 = getFileContent($filePath1);
+    $fileContent2 = getFileContent($filePath2);
 
     $diff = findDifference($fileContent1, $fileContent2);
     $formatResult = formatResult($diff);
@@ -138,4 +135,11 @@ function getContent($path)
         echo $e->getMessage();
         return false;
     }
+}
+
+function getFileContent($filePath)
+{
+    $file = getContent($filePath);
+
+    return json_decode($file2, true);
 }
