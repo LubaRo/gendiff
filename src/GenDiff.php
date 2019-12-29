@@ -23,7 +23,7 @@ function run()
       -v --version                  Show version
       --format <fmt>                Report format [default: pretty]
 
-    DOCOPT;
+DOCOPT;
 
     $data = Docopt::handle($doc, array('version' => VERSION));
 
