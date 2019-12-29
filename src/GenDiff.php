@@ -141,5 +141,5 @@ function getFileContent($filePath)
 {
     $file = getContent($filePath);
 
-    return json_decode($file2, true);
+    return json_decode($file, true);
 }
