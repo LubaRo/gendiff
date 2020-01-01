@@ -13,5 +13,5 @@ before_script:
 
 script:
   - make lint
-  - "vendor/bin/phpunit tests --testsuite=unit --coverage-text --coverage-clover ./clover.xml"
+  - make test-covarage
   - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
