@@ -56,9 +56,9 @@ function findDifference($fileContent1, $fileContent2)
         $value = is_bool($value) ? var_export($value, true) : $value;
 
         if (isset($fileContent2[$key])) {
-            $fileContent2[$key] = is_bool($fileContent2[$key]) ? var_export($fileContent2[$key], true) : $fileContent2[$key];
+            $value2 = is_bool($fileContent2[$key]) ? var_export($fileContent2[$key], true) : $fileContent2[$key];
 
-            if ($value === $fileContent2[$key]) {
+            if ($value === $value2) {
                 $result[$key] = array(
                     'value' => $value,
                     'status' => 'notChanged'
@@ -66,7 +66,7 @@ function findDifference($fileContent1, $fileContent2)
             } else {
                 $result[$key] = array(
                     'valueBefore' => $value,
-                    'valueAfter' => $fileContent2[$key],
+                    'valueAfter' => $value2,
                     'status' => 'changed'
                 );
             }
