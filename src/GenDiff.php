@@ -53,7 +53,11 @@ function findDifference($fileContent1, $fileContent2)
     $result = array();
 
     foreach ($fileContent1 as $key => $value) {
+        $value = is_bool($value) ? var_export($value, true) : $value;
+
         if (isset($fileContent2[$key])) {
+            $fileContent2[$key] = is_bool($fileContent2[$key]) ? var_export($fileContent2[$key], true) : $fileContent2[$key];
+
             if ($value === $fileContent2[$key]) {
                 $result[$key] = array(
                     'value' => $value,
@@ -76,6 +80,8 @@ function findDifference($fileContent1, $fileContent2)
 
     $newValues = array_diff_key($fileContent2, $fileContent1);
     foreach ($newValues as $key => $value) {
+        $value = is_bool($value) ? var_export($value, true) : $value;
+
         $result[$key] = array(
             'value' => $value,
             'status' => 'new'
