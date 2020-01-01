@@ -1,8 +1,24 @@
+env:
+  global:
+    - CC_TEST_REPORTER_ID=3509dce6e2e167dd4f3961da814c3b266383d0f5ad8795e62a9b15df83a6f8f9
+    - GIT_COMMITTED_AT=$(if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then git log -1 --pretty=format:%ct; else git log -1 --skip 1 --pretty=format:%ct; fi)
+
 language: php
+
 php:
   - '7.3'
 
 install:
   - make install
 
-script: make lint
+script: 
+  
+before_script:
+  - curl -L https://codeclimate.com/downloads/test-reporter/test-reporter-latest-linux-amd64 > ./cc-test-reporter
+  - chmod +x ./cc-test-reporter
+  - ./cc-test-reporter before-build
+
+script:
+  - make lint
+  - "phpunit tests --testsuite=unit --coverage-text --coverage-clover build/logs/clover.xml"
+  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
