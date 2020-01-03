@@ -14,4 +14,3 @@ before_script:
 script:
   - make lint
   - make test-covarage
-  - if [ "$TRAVIS_PULL_REQUEST" == "false" ]; then ./cc-test-reporter after-build --exit-code $TRAVIS_TEST_RESULT; fi
