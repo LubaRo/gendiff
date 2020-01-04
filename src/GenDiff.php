@@ -5,6 +5,8 @@ namespace Differ\GenDiff;
 use Docopt;
 use Funct\Strings;
 
+use function Differ\Parser\parseFile;
+
 define('VERSION', '1.0');
 define('DEFAULT_FORMAT', 'pretty');
 
@@ -39,8 +41,8 @@ DOCOPT;
 
 function genDiff($filePath1, $filePath2)
 {
-    $fileContent1 = getFileContent($filePath1);
-    $fileContent2 = getFileContent($filePath2);
+    $fileContent1 = parseFile($filePath1);
+    $fileContent2 = parseFile($filePath2);
 
     $diff = findDifference($fileContent1, $fileContent2);
     $formatResult = formatResult($diff);
@@ -121,31 +123,4 @@ function formatResult(array $diff)
     $str = Strings\toSentence($result, PHP_EOL, PHP_EOL);
 
     return $str;
-}
-
-function readFile($path)
-{
-    if (!file_exists($path)) {
-        throw new \Exception("File '${path}' doesn't exist\n");
-    }
-
-    return file_get_contents($path);
-}
-
-function getContent($path)
-{
-    try {
-        $content = readFile($path);
-        return $content;
-    } catch (\Exception $e) {
-        echo $e->getMessage();
-        return false;
-    }
-}
-
-function getFileContent($filePath)
-{
-    $file = getContent($filePath);
-
-    return json_decode($file, true);
 }
