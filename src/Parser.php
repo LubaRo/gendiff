@@ -10,9 +10,9 @@ function parseFile($filePath)
     $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
     if ($extension == 'json') {
-        return json_decode($file, true);
+        return json_decode($file);
     } elseif ($extension == 'yaml') {
-        return Yaml::parse($file);
+        return Yaml::parse($file, Yaml::PARSE_OBJECT_FOR_MAP);
     }
 
     throw new \Exception("File extension '{$extension}' is incorrect or not supported\n");

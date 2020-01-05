@@ -41,8 +41,8 @@ DOCOPT;
 
 function genDiff($filePath1, $filePath2)
 {
-    $fileContent1 = parseFile($filePath1);
-    $fileContent2 = parseFile($filePath2);
+    $fileContent1 = (array) parseFile($filePath1);
+    $fileContent2 = (array) parseFile($filePath2);
 
     $diff = findDifference($fileContent1, $fileContent2);
     $formatResult = formatResult($diff);
@@ -50,56 +50,52 @@ function genDiff($filePath1, $filePath2)
     return $formatResult;
 }
 
-function findDifference($fileContent1, $fileContent2)
+function findDifference(array $parsedData1, array $parsedData2): array
 {
-    $result = array();
+    $data1 = prepareData($parsedData1);
+    $data2 = prepareData($parsedData2);
 
-    foreach ($fileContent1 as $key => $value) {
-        $value = is_bool($value) ? var_export($value, true) : $value;
-
-        if (isset($fileContent2[$key])) {
-            $value2 = is_bool($fileContent2[$key]) ? var_export($fileContent2[$key], true) : $fileContent2[$key];
-
-            if ($value === $value2) {
-                $result[$key] = array(
-                    'value' => $value,
-                    'status' => 'notChanged'
-                );
-            } else {
-                $result[$key] = array(
-                    'valueBefore' => $value,
-                    'valueAfter' => $value2,
-                    'status' => 'changed'
-                );
-            }
-        } else {
-            $result[$key] = array(
-                'value' => $value,
+    $diff = array_reduce(array_keys($data1), function ($acc, $key) use ($data1, $data2) {
+        if (!isset($data2[$key])) {
+            $acc[$key] = array(
+                'value' => $data1[$key],
                 'status' => 'removed'
             );
+        } elseif ($data1[$key] == $data2[$key]) {
+            $acc[$key] = array(
+                'value' => $data1[$key],
+                'status' => 'notChanged'
+            );
+        } else {
+            $acc[$key] = array(
+                'valueBefore' => $data1[$key],
+                'valueAfter' => $data2[$key],
+                'status' => 'changed'
+            );
         }
-    }
+        
+        return $acc;
+    }, []);
 
-    $newValues = array_diff_key($fileContent2, $fileContent1);
+    $newValues = array_diff_key($data2, $data1);
     foreach ($newValues as $key => $value) {
-        $value = is_bool($value) ? var_export($value, true) : $value;
-
-        $result[$key] = array(
+        $diff[$key] = array(
             'value' => $value,
             'status' => 'new'
         );
     }
 
-    return $result;
+    return $diff;
 }
 
-function formatResult(array $diff)
+function formatResult($diff)
 {
     if (empty($diff)) {
         return '{}';
     }
 
-    $result = array('{');
+    $result = array();
+    $result[] = '{';
 
     foreach ($diff as $key => $data) {
         switch ($data['status']) {
@@ -118,9 +114,21 @@ function formatResult(array $diff)
                 break;
         }
     }
+
     $result[] = '}';
 
     $str = Strings\toSentence($result, PHP_EOL, PHP_EOL);
-
+    
     return $str;
+}
+
+function prepareData($data)
+{
+    foreach ($data as &$value) {
+        if (is_bool($value) || is_null($value)) {
+            $value = var_export($value, true);
+        }
+    }
+
+    return $data;
 }
