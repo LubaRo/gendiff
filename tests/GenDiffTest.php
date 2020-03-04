@@ -45,11 +45,13 @@ class GenDiffTest extends TestCase
         $this->assertEquals($expected, GenDiff\genDiff($beforeJson, $afterJson));
     }
 
-    // public function testGenDiffYamlRecurse()
-    // {
-    //     $beforeYaml = $this->files_dir . 'before.yaml';
-    //     $afterYaml = $this->files_dir . 'after.yaml';
+    public function testGenDiffYamlRecurse()
+    {
+        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
+        $afterYaml = $this->files_dir . 'recurse_after.yaml';
 
-    //     $this->assertEquals($this->expectedResult, GenDiff\genDiff($beforeYaml, $afterYaml));
-    // }
+        $expected = file_get_contents($this->files_dir . 'recurse_expected.txt');
+
+        $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
+    }
 }
