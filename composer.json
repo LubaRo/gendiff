@@ -15,7 +15,10 @@
     "autoload": {
         "files": [
             "src/GenDiff.php",
-            "src/Parser.php"
+            "src/Parser.php",
+            "src/Formatter.php",
+            "src/Formatters/Plain.php",
+            "src/Formatters/Pretty.php"
         ]
     },
     "scripts": {

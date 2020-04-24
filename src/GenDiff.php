@@ -3,9 +3,9 @@
 namespace Differ\GenDiff;
 
 use Docopt;
-use Funct\Strings;
 
 use function Differ\Parser\parseFile;
+use function Differ\Formatter\getFormatter;
 
 define('VERSION', '1.0');
 define('DEFAULT_FORMAT', 'pretty');
@@ -35,18 +35,18 @@ DOCOPT;
     $filePath1 = isset($data['<firstFile>']) ? $data['<firstFile>'] : '';
     $filePath2 = isset($data['<secondFile>']) ? $data['<secondFile>'] : '';
 
-    $formatResult = genDiff($filePath1, $filePath2);
+    $formatResult = genDiff($filePath1, $filePath2, $format);
 
     echo (PHP_EOL . $formatResult . PHP_EOL);
 }
 
-function genDiff($filePath1, $filePath2)
+function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 {
     $fileContent1 = (array) parseFile($filePath1);
     $fileContent2 = (array) parseFile($filePath2);
 
     $diff = findDifference($fileContent1, $fileContent2);
-    $formatResult = formatResult($diff);
+    $formatResult = formatDifference($diff, $format);
 
     return $formatResult;
 }
@@ -90,68 +90,8 @@ function findDifference(array $data1, array $data2): array
     return $diff;
 }
 
-function formatResult($diff, $nestedLevel = 0)
+function formatDifference($diff, $format)
 {
-    if (empty($diff)) {
-        return '{}';
-    }
-
-    $identation = Strings\times(' ', IDENTATION_SIZE);
-    $leftIdentation = Strings\times($identation, $nestedLevel);
-    $result = array();
-
-    if (empty($nestedLevel)) {
-        $result[] = $leftIdentation . '{';
-    }
-
-    foreach ($diff as $key => $data) {
-        if (is_array($data) && !isset($data['status'])) {
-            $result[] = $leftIdentation . $identation . "$key: {";
-            $result[] = formatResult($data, $nestedLevel + 1);
-        } else {
-            switch ($data['status']) {
-                case 'notChanged':
-                    $result[] = formatResultRow($leftIdentation, ' ', $key, $data['value']);
-                    break;
-                case 'changed':
-                    $result[] = formatResultRow($leftIdentation, '+', $key, $data['valueAfter']);
-                    $result[] = formatResultRow($leftIdentation, '-', $key, $data['valueBefore']);
-                    break;
-                case 'removed':
-                    $result[] = formatResultRow($leftIdentation, '-', $key, $data['value']);
-                    break;
-                case 'new':
-                    $result[] = formatResultRow($leftIdentation, '+', $key, $data['value']);
-                    break;
-            }
-        }
-    }
-
-    $result[] = $leftIdentation . '}';
-
-    $str = Strings\toSentence($result, PHP_EOL, PHP_EOL);
-    
-    return $str;
-}
-
-function formatResultRow($leftIdentation, $operator, $key, $value)
-{
-    $decodedValue = json_decode($value, true);
-
-    if (!is_array($decodedValue)) {
-        $valueData = is_string($decodedValue) ? $decodedValue : $value;
-        $result = "$leftIdentation  $operator $key: $valueData";
-    } else {
-        $tmp[] = "$leftIdentation  $operator $key: {";
-
-        foreach ($decodedValue as $k => $v) {
-            $tmp[] = $leftIdentation . Strings\times(' ', IDENTATION_SIZE * 2) . $k . ': ' . $v;
-        }
-
-        $tmp[] = $leftIdentation . Strings\times(' ', IDENTATION_SIZE) . '}';
-
-        $result = Strings\toSentence($tmp, PHP_EOL, PHP_EOL);
-    }
-
-    return $result;
+    $formatter = getFormatter($format);
+    return $formatter($diff);
 }
