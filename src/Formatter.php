@@ -2,16 +2,17 @@
 
 namespace Differ\Formatter;
 
-use function Differ\Formatters\Pretty\getFormater as getPrettyFormatter;
-use function Differ\Formatters\Plain\getFormater as getPlainFormatter;
+use function Differ\Formatters\Pretty\format as formatPretty;
+use function Differ\Formatters\Plain\format as formatPlain;
 
-function getFormatter($format)
+function getFormattedData($data, $format)
 {
-    if ($format === 'pretty') {
-        $func = getPrettyFormatter();
-        return $func;
-    } elseif ($format === 'plain') {
-        $func = getPlainFormatter();
-        return $func;
+    switch ($format) {
+        case 'pretty':
+            return formatPretty($data);
+        case 'plain':
+            return formatPlain($data);
+        default:
+            throw new \Exception("Unknown format: '{$format}'.");
     }
 }

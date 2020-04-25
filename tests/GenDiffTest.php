@@ -65,4 +65,24 @@ class GenDiffTest extends TestCase
 
         $this->assertEquals($expected, $result);
     }
+
+    public function testParserException()
+    {
+        $this->expectExceptionMessage("Unknown format: 'invalid_format'.");
+
+        $beforeJson = $this->files_dir . 'before.json';
+        $afterJson = $this->files_dir . 'after.json';
+
+        GenDiff\genDiff($beforeJson, $afterJson, 'invalid_format');
+    }
+
+    public function testFormatterException()
+    {
+        $this->expectExceptionMessage("File extension 'zz' is incorrect or not supported.");
+
+        $beforeJson = $this->files_dir . 'before.json';
+        $afterJson = $this->files_dir . 'wrong_extention.zz';
+
+        GenDiff\genDiff($beforeJson, $afterJson);
+    }
 }

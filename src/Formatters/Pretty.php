@@ -4,7 +4,7 @@ namespace Differ\Formatters\Pretty;
 
 use Funct\Strings;
 
-function getFormater()
+function format($data)
 {
     $formatter = function ($data, $nestedLevel = 0) use (&$formatter) {
         if (empty($data)) {
@@ -49,7 +49,7 @@ function getFormater()
 
         return $str;
     };
-    return $formatter;
+    return $formatter($data);
 }
 
 function formatResultRow($leftIdentation, $operator, $key, $value)
