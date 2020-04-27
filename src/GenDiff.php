@@ -13,6 +13,14 @@ define('IDENTATION_SIZE', 4);
 
 function run()
 {
+    list($filePath1, $filePath2, $format) = getInputData();
+    $result = genDiff($filePath1, $filePath2, $format);
+
+    echo (PHP_EOL . $result . PHP_EOL);
+}
+
+function getInputData()
+{
     $doc = <<<'DOCOPT'
     Generate diff
 
@@ -29,22 +37,12 @@ function run()
 DOCOPT;
 
     $data = Docopt::handle($doc, array('version' => VERSION));
+
     $format = $data['--format'] ?? DEFAULT_FORMAT;
+    $filePath1 = $data['<firstFile>'] ?? '';
+    $filePath2 = $data['<secondFile>'] ?? '';
 
-    $result = genDiff($data['<firstFile>'], $data['<secondFile>'], $format);
-
-    echo (PHP_EOL . $result . PHP_EOL);
-}
-
-function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
-{
-    $fileContent1 = (array) getFileData($filePath1);
-    $fileContent2 = (array) getFileData($filePath2);
-
-    $diff = buildAst($fileContent1, $fileContent2);
-    $formatResult = getFormattedData($diff, $format);
-
-    return $formatResult;
+    return [$filePath1, $filePath2, $format];
 }
 
 function getFileData($filePath)
@@ -53,6 +51,18 @@ function getFileData($filePath)
     $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
     return parse($data, $extension);
+}
+
+function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
+{
+    $fileContent1 = (array) getFileData($filePath1);
+    $fileContent2 = (array) getFileData($filePath2);
+
+
+    $diff = buildAst($fileContent1, $fileContent2);
+    $formatResult = getFormattedData($diff, $format);
+
+    return $formatResult;
 }
 
 function buildAst(array $data1, array $data2): array
