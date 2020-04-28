@@ -13,3 +13,6 @@ Find differences between two *json* files:
 
 Find differences between two *yaml* files:
 [![asciicast](https://asciinema.org/a/324314.svg)](https://asciinema.org/a/324314)
+
+Ability to compare nested structures:
+[![asciicast](https://asciinema.org/a/324798.svg)](https://asciinema.org/a/324798)
