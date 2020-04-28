@@ -8,7 +8,7 @@ function parse($data, $extension)
 {
     switch ($extension) {
         case 'json':
-            return json_decode($data);
+            return json_decode($data, true);
         case 'yaml':
             return parseYaml($data);
         default:

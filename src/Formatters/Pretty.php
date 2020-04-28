@@ -2,74 +2,89 @@
 
 namespace Differ\Formatters\Pretty;
 
-use Funct\Strings;
+use function Funct\Collection\flatten;
 
-function format($data)
+define('IDENTATION', '    ');
+
+function getRowFormatter($status)
 {
-    $formatter = function ($data, $nestedLevel = 0) use (&$formatter) {
-        if (empty($data)) {
-            return '{}';
+    $statuses = [
+        'added' => function ($identation, $property, $value) {
+            $normalizedValue = normalizePropertyValue($value, $identation);
+            return "$identation  + $property: $normalizedValue";
+        },
+        'removed' => function ($identation, $property, $value) {
+            $normalizedValue = normalizePropertyValue($value, $identation);
+            return "$identation  - $property: $normalizedValue";
+        },
+        'unchanged' => function ($identation, $property, $value) {
+            $normalizedValue = normalizePropertyValue($value, $identation);
+            return "$identation    $property: $normalizedValue";
+        },
+        'changed' => function ($identation, $property, $value) {
+            ['before' => $before, 'after' => $after] = $value;
+
+            $normalizedBefore = normalizePropertyValue($before, $identation);
+            $normalizedAfter = normalizePropertyValue($after, $identation);
+
+            $beforeRow = "$identation  - $property: $normalizedBefore";
+            $afterRow = "$identation  + $property: $normalizedAfter";
+
+            return "$afterRow\n$beforeRow";
         }
+    ];
 
-        $result = array();
-
-        $identation = Strings\times(' ', IDENTATION_SIZE);
-        $leftIdentation = Strings\times($identation, $nestedLevel);
-
-        if (empty($nestedLevel)) {
-            $result[] = $leftIdentation . '{';
-        }
-
-        foreach ($data as $key => $data) {
-            if (is_array($data) && !isset($data['status'])) {
-                $result[] = $leftIdentation . $identation . "$key: {";
-                $result[] = $formatter($data, $nestedLevel + 1);
-            } else {
-                switch ($data['status']) {
-                    case 'notChanged':
-                        $result[] = formatResultRow($leftIdentation, ' ', $key, $data['value']);
-                        break;
-                    case 'changed':
-                        $result[] = formatResultRow($leftIdentation, '+', $key, $data['valueAfter']);
-                        $result[] = formatResultRow($leftIdentation, '-', $key, $data['valueBefore']);
-                        break;
-                    case 'removed':
-                        $result[] = formatResultRow($leftIdentation, '-', $key, $data['value']);
-                        break;
-                    case 'new':
-                        $result[] = formatResultRow($leftIdentation, '+', $key, $data['value']);
-                        break;
-                }
-            }
-        }
-
-        $result[] = $leftIdentation . '}';
-
-        $str = Strings\toSentence($result, PHP_EOL, PHP_EOL);
-
-        return $str;
-    };
-    return $formatter($data);
+    return $statuses[$status];
 }
 
-function formatResultRow($leftIdentation, $operator, $key, $value)
+function format($data, $nestedLevel = 0)
 {
-    $decodedValue = json_decode($value, true);
-
-    if (!is_array($decodedValue)) {
-        $valueData = is_string($decodedValue) ? $decodedValue : $value;
-        $result = "$leftIdentation  $operator $key: $valueData";
-    } else {
-        $tmp[] = "$leftIdentation  $operator $key: {";
-
-        foreach ($decodedValue as $k => $v) {
-            $tmp[] = $leftIdentation . Strings\times(' ', IDENTATION_SIZE * 2) . $k . ': ' . $v;
-        }
-
-        $tmp[] = $leftIdentation . Strings\times(' ', IDENTATION_SIZE) . '}';
-
-        $result = Strings\toSentence($tmp, PHP_EOL, PHP_EOL);
+    if (empty($data)) {
+        return '{}';
     }
 
-    return $result;
+    $leftIdentation = str_repeat(IDENTATION, $nestedLevel);
+
+    $propertiesData = array_reduce($data, function ($acc, $propertyData) use ($leftIdentation, $nestedLevel) {
+        $children = $propertyData['children'] ?? [];
+        $name = $propertyData['name'] ?? '';
+
+        if ($children) {
+            $formattedChildren = format($children, $nestedLevel + 1);
+            $acc[] = $leftIdentation . IDENTATION . "$name: $formattedChildren";
+            return $acc;
+        }
+        ['value' => $value, 'status' => $status] = $propertyData;
+        $rowFormatter = getRowFormatter($status);
+        $acc[] = $rowFormatter($leftIdentation, $name, $value);
+
+        return $acc;
+    }, []);
+
+    $propertiesBlock = implode("\n", $propertiesData);
+
+    return "{\n" . $propertiesBlock . "\n$leftIdentation}";
+}
+
+function normalizePropertyValue($data, $identation)
+{
+    if (is_bool($data)) {
+        return $data ? 'true' : 'false';
+    }
+
+    if (is_array($data)) {
+        $properties = array_keys($data);
+        $leftIdentation = IDENTATION . $identation;
+        $contentIdentation = IDENTATION . $leftIdentation;
+
+        $childrenBlocks = array_map(function ($key) use ($data, $leftIdentation, $contentIdentation) {
+            $value = $data[$key];
+            $result = "{\n$contentIdentation" . "$key: $value\n" . "$leftIdentation}";
+
+            return $result;
+        }, $properties);
+
+        return implode("", $childrenBlocks);
+    }
+    return $data;
 }

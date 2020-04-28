@@ -55,7 +55,7 @@ class GenDiffTest extends TestCase
         $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
     }
 
-    public function testGenDiffPlain()
+/*    public function testGenDiffPlain()
     {
         $beforeJson = $this->files_dir . 'before.json';
         $afterJson = $this->files_dir . 'after.json';
@@ -84,5 +84,5 @@ class GenDiffTest extends TestCase
         $afterJson = $this->files_dir . 'wrong_extention.zz';
 
         GenDiff\genDiff($beforeJson, $afterJson);
-    }
+    }*/
 }
