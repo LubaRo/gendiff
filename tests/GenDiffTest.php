@@ -55,12 +55,23 @@ class GenDiffTest extends TestCase
         $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
     }
 
-/*    public function testGenDiffPlain()
+    public function testGenDiffPlainJson()
     {
-        $beforeJson = $this->files_dir . 'before.json';
-        $afterJson = $this->files_dir . 'after.json';
+        $beforeJson = $this->files_dir . 'recurse_before.json';
+        $afterJson = $this->files_dir . 'recurse_after.json';
 
-        $expected = file_get_contents($this->files_dir . 'plain_json_expected.txt');
+        $expected = file_get_contents($this->files_dir . 'plain_expected.txt');
+        $result = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
+
+        $this->assertEquals($expected, $result);
+    }
+
+    public function testGenDiffPlainYaml()
+    {
+        $beforeJson = $this->files_dir . 'recurse_before.yaml';
+        $afterJson = $this->files_dir . 'recurse_after.yaml';
+
+        $expected = file_get_contents($this->files_dir . 'plain_expected.txt');
         $result = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
 
         $this->assertEquals($expected, $result);
@@ -84,5 +95,5 @@ class GenDiffTest extends TestCase
         $afterJson = $this->files_dir . 'wrong_extention.zz';
 
         GenDiff\genDiff($beforeJson, $afterJson);
-    }*/
+    }
 }

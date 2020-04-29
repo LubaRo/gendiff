@@ -4,19 +4,76 @@ namespace Differ\Formatters\Plain;
 
 function format($data)
 {
-    $result = [];
+    $propertiesRows = getPropertiesRows($data);
+    $filteredRows = array_filter($propertiesRows, function ($elem) {
+        return !empty($elem);
+    });
 
-    foreach ($data as $key => $value) {
-        if ($value['status'] === 'notChanged') {
-            continue;
-        } elseif ($value['status'] === 'changed') {
-            $result[] = "Property '{$key}' was changed. From '{$value['valueBefore']}' to '{$value['valueAfter']}'";
-        } elseif ($value['status'] === 'removed') {
-            $result[] = "Property '{$key}' was removed.";
-        } elseif ($value['status'] === 'new') {
-            $result[] = "Property '{$key}' was added with value: '{$value['value']}'";
+    return implode("\n", $filteredRows);
+}
+
+function getPropertiesRows($propertiesData, $path = [])
+{
+    $reduce  = function ($acc, $property) use (&$reduce, $path) {
+        $children = $property['children'] ?? [];
+        $name = $property['name'] ?? '';
+        $newPath = [...$path, $name];
+
+        if (!$children) {
+            $newData = getPropertyRow($property, $newPath);
+            $acc[] = $newData;
+            return $acc;
         }
-    }
 
-    return implode("\n", $result);
+        $childrenData = getPropertiesRows($children, $newPath);
+
+        return array_merge($acc, $childrenData);
+    };
+
+    $result = array_reduce($propertiesData, function ($acc, $property) use ($reduce) {
+        return $reduce($acc, $property);
+    }, []);
+
+    return $result;
+}
+
+function getPropertyRow($propertyData, $fullPath)
+{
+    $status = $propertyData['status'] ?? '';
+    $fullName = implode('.', $fullPath);
+    $value = $propertyData['value'] ?? '';
+
+    $format = getPropertyFormatter($status);
+    return $format($fullName, $value);
+}
+
+function getPropertyFormatter($status)
+{
+    $statuses = [
+        'added' => function ($name, $value) {
+            $nomalizedValue = prepareValue($value);
+            return "Property '$name' was added with value: '$nomalizedValue'";
+        },
+        'removed' => function ($name) {
+            return "Property '$name' was removed";
+        },
+        'unchanged' => function () {
+            return '';
+        },
+        'changed' => function ($name, $value) {
+
+            ['before' => $before, 'after' => $after] = $value;
+            $normalizedBefore = prepareValue($before);
+            $normalizedAfter = prepareValue($after);
+
+            return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
+        }
+    ];
+
+    return $statuses[$status];
+}
+
+function prepareValue($value)
+{
+    return is_array($value) ? 'complex value' : $value;
 }
