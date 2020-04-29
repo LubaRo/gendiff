@@ -8,14 +8,18 @@
 
 **GenDiff** - the simple utility for finding differences in configuration files
 
-Find differences between two *json* files:
+Find differences between two *json* files:<br>
 [![asciicast](https://asciinema.org/a/fSsmlVQLw5i8hRnIC8ovuJZLA.svg)](https://asciinema.org/a/fSsmlVQLw5i8hRnIC8ovuJZLA) 
 
-Find differences between two *yaml* files:
+Find differences between two *yaml* files:<br>
 [![asciicast](https://asciinema.org/a/324314.svg)](https://asciinema.org/a/324314)
 
 Ability to compare nested structures:
 [![asciicast](https://asciinema.org/a/325168.svg)](https://asciinema.org/a/325168)
 
-Available 'pretty' and 'plain' output formats:
+Available 'plain' output format:<br>
 [![asciicast](https://asciinema.org/a/325171.svg)](https://asciinema.org/a/325171)
+
+Available 'json' output format:<br>
+[![asciicast](https://asciinema.org/a/325271.svg)](https://asciinema.org/a/325271)
+
