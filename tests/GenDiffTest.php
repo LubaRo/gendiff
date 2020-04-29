@@ -55,26 +55,80 @@ class GenDiffTest extends TestCase
         $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
     }
 
-    public function testGenDiffPlainJson()
+    public function testGenDiffPlainReport()
     {
+        $expected = file_get_contents($this->files_dir . 'plain_report_expected.txt');
+
         $beforeJson = $this->files_dir . 'recurse_before.json';
         $afterJson = $this->files_dir . 'recurse_after.json';
+        $result1 = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
+        $this->assertEquals($expected, $result1);
 
-        $expected = file_get_contents($this->files_dir . 'plain_expected.txt');
-        $result = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
-
-        $this->assertEquals($expected, $result);
+        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
+        $afterYaml = $this->files_dir . 'recurse_after.yaml';
+        $result2 = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
+        $this->assertEquals($expected, $result2);
     }
 
-    public function testGenDiffPlainYaml()
+    public function testGenDiffJsonReport()
     {
-        $beforeJson = $this->files_dir . 'recurse_before.yaml';
-        $afterJson = $this->files_dir . 'recurse_after.yaml';
+        $arr = [
+            'changed' => [
+                [
+                    'path' => 'group1/baz',
+                    'new_value' => 'bars',
+                    'old_value' => 'bas'
+                ],
+            ],
+            'removed' => [
+                [
+                    'path' => 'common/setting2',
+                    'value' => 200
+                ],
+                [
+                    'path' => 'common/setting6',
+                    'value' => [
+                        'key' => 'value'
+                    ]
+                ],
+                [
+                    'path' => 'group2',
+                    'value' => [
+                        'abc' => 12345
+                    ]
+                ]
+            ],
+            'added' => [
+                [
+                    'path' => 'common/setting4',
+                    'value' => 'blah blah'
+                ],
+                [
+                    'path' => 'common/setting5',
+                    'value' => [
+                        'key5' => 'value5'
+                    ]
+                ],
+                [
+                    'path' => 'group3',
+                    'value' => [
+                        'fee' => 100500
+                    ]
+                ]
+            ]
+        ];
+        $expected = json_encode($arr);
 
-        $expected = file_get_contents($this->files_dir . 'plain_expected.txt');
-        $result = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
+        $beforeJson = $this->files_dir . 'recurse_before.json';
+        $afterJson = $this->files_dir . 'recurse_after.json';
+        $result1 = GenDiff\genDiff($beforeJson, $afterJson, 'json');
 
-        $this->assertEquals($expected, $result);
+        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
+        $afterYaml = $this->files_dir . 'recurse_after.yaml';
+        $result2 = GenDiff\genDiff($beforeJson, $afterJson, 'json');
+        $this->assertEquals($expected, $result2);
+
+        $this->assertSame($expected, $result1);
     }
 
     public function testParserException()

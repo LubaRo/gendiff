@@ -8,4 +8,4 @@ group1:
   foo: bar
   baz: bars
 group3:
-  fee: '100500'
+  fee: 100500
