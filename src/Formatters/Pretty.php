@@ -6,29 +6,28 @@ use function Funct\Collection\flatten;
 
 define('IDENTATION', '    ');
 
-function getRowFormatter($status)
+function formatProperty($property, $value, $identation, $sign = ' ')
+{
+    $prettyValue = prepareValue($value, $identation);
+    return "$identation  $sign $property: $prettyValue";
+}
+
+function getPropertyFormatter($status)
 {
     $statuses = [
         'added' => function ($identation, $property, $value) {
-            $normalizedValue = normalizePropertyValue($value, $identation);
-            return "$identation  + $property: $normalizedValue";
+            return formatProperty($property, $value, $identation, '+');
         },
         'removed' => function ($identation, $property, $value) {
-            $normalizedValue = normalizePropertyValue($value, $identation);
-            return "$identation  - $property: $normalizedValue";
+            return formatProperty($property, $value, $identation, '-');
         },
         'unchanged' => function ($identation, $property, $value) {
-            $normalizedValue = normalizePropertyValue($value, $identation);
-            return "$identation    $property: $normalizedValue";
+            return formatProperty($property, $value, $identation);
         },
         'changed' => function ($identation, $property, $value) {
             ['before' => $before, 'after' => $after] = $value;
-
-            $normalizedBefore = normalizePropertyValue($before, $identation);
-            $normalizedAfter = normalizePropertyValue($after, $identation);
-
-            $beforeRow = "$identation  - $property: $normalizedBefore";
-            $afterRow = "$identation  + $property: $normalizedAfter";
+            $beforeRow = formatProperty($property, $before, $identation, '-');
+            $afterRow = formatProperty($property, $after, $identation, '+');
 
             return "$afterRow\n$beforeRow";
         }
@@ -51,12 +50,12 @@ function format($data, $nestedLevel = 0)
 
         if ($children) {
             $formattedChildren = format($children, $nestedLevel + 1);
-            $acc[] = $leftIdentation . IDENTATION . "$name: $formattedChildren";
+            $acc[] = IDENTATION . $leftIdentation . "$name: $formattedChildren";
             return $acc;
         }
         ['value' => $value, 'status' => $status] = $propertyData;
-        $rowFormatter = getRowFormatter($status);
-        $acc[] = $rowFormatter($leftIdentation, $name, $value);
+        $propertyFormatter = getPropertyFormatter($status);
+        $acc[] = $propertyFormatter($leftIdentation, $name, $value);
 
         return $acc;
     }, []);
@@ -66,7 +65,7 @@ function format($data, $nestedLevel = 0)
     return "{\n" . $propertiesBlock . "\n$leftIdentation}";
 }
 
-function normalizePropertyValue($data, $identation)
+function prepareValue($data, $identation)
 {
     if (is_bool($data)) {
         return $data ? 'true' : 'false';
