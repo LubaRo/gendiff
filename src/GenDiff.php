@@ -10,6 +10,10 @@ use function Differ\Formatter\getFormattedData;
 
 define('VERSION', '1.0');
 define('DEFAULT_FORMAT', 'pretty');
+define('STATUS_NEW', 'added');
+define('STATUS_REMOVED', 'removed');
+define('STATUS_CHANGED', 'changed');
+define('STATUS_UNCHANGED', 'unchanged');
 
 function run()
 {
@@ -74,13 +78,13 @@ function buildAst(array $data1, array $data2): array
 
         if (!isset($data2[$key])) {
             return array_merge($common, [
-                'status' => 'removed',
+                'status' => STATUS_REMOVED,
                 'value' => $data1[$key]
             ]);
         }
         if (!isset($data1[$key])) {
             return array_merge($common, [
-                'status' => 'added',
+                'status' => STATUS_NEW,
                 'value' => $data2[$key]
             ]);
         }
@@ -91,13 +95,13 @@ function buildAst(array $data1, array $data2): array
         }
         if ($data1[$key] === $data2[$key]) {
             return array_merge($common, [
-                'status' => 'unchanged',
+                'status' => STATUS_UNCHANGED,
                 'value' => $data1[$key]
             ]);
         }
 
         return array_merge($common, [
-            'status' => 'changed',
+            'status' => STATUS_CHANGED,
             'value' => [
                 'before' => $data1[$key],
                 'after' => $data2[$key]

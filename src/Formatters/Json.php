@@ -43,7 +43,7 @@ function getFormattedProperty($propertyData, $path)
 {
     $fullName = implode('/', $path);
 
-    if ($propertyData['status'] === 'changed') {
+    if ($propertyData['status'] === STATUS_CHANGED) {
         ['before' => $before, 'after' => $after] = $propertyData['value'];
 
         return [
@@ -61,7 +61,7 @@ function getFormattedProperty($propertyData, $path)
 
 function filterDiff($diff)
 {
-    $displayedStatuses = ['changed', 'removed', 'added'];
+    $displayedStatuses = [STATUS_CHANGED, STATUS_REMOVED, STATUS_NEW];
 
     return array_filter($diff, function ($status) use ($displayedStatuses) {
         return in_array($status, $displayedStatuses);
@@ -71,9 +71,9 @@ function filterDiff($diff)
 function sortDiff($diff)
 {
     $sortOrder = [
-        'changed' => 1,
-        'removed' => 2,
-        'added' => 3
+        STATUS_CHANGED => 1,
+        STATUS_REMOVED => 2,
+        STATUS_NEW => 3
     ];
 
     uksort($diff, function ($key1, $key2) use ($sortOrder) {

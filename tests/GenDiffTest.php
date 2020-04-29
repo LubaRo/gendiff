@@ -73,14 +73,14 @@ class GenDiffTest extends TestCase
     public function testGenDiffJsonReport()
     {
         $arr = [
-            'changed' => [
+            STATUS_CHANGED => [
                 [
                     'path' => 'group1/baz',
                     'new_value' => 'bars',
                     'old_value' => 'bas'
                 ],
             ],
-            'removed' => [
+            STATUS_REMOVED => [
                 [
                     'path' => 'common/setting2',
                     'value' => 200
@@ -98,7 +98,7 @@ class GenDiffTest extends TestCase
                     ]
                 ]
             ],
-            'added' => [
+            STATUS_NEW => [
                 [
                     'path' => 'common/setting4',
                     'value' => 'blah blah'

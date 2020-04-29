@@ -50,17 +50,17 @@ function getPropertyRow($propertyData, $fullPath)
 function getPropertyFormatter($status)
 {
     $statuses = [
-        'added' => function ($name, $value) {
+        STATUS_NEW => function ($name, $value) {
             $nomalizedValue = prepareValue($value);
             return "Property '$name' was added with value: '$nomalizedValue'";
         },
-        'removed' => function ($name) {
+        STATUS_REMOVED => function ($name) {
             return "Property '$name' was removed";
         },
-        'unchanged' => function () {
+        STATUS_UNCHANGED => function () {
             return '';
         },
-        'changed' => function ($name, $value) {
+        STATUS_CHANGED => function ($name, $value) {
 
             ['before' => $before, 'after' => $after] = $value;
             $normalizedBefore = prepareValue($before);

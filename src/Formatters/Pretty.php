@@ -15,16 +15,16 @@ function formatProperty($property, $value, $identation, $sign = ' ')
 function getPropertyFormatter($status)
 {
     $statuses = [
-        'added' => function ($identation, $property, $value) {
+        STATUS_NEW => function ($identation, $property, $value) {
             return formatProperty($property, $value, $identation, '+');
         },
-        'removed' => function ($identation, $property, $value) {
+        STATUS_REMOVED => function ($identation, $property, $value) {
             return formatProperty($property, $value, $identation, '-');
         },
-        'unchanged' => function ($identation, $property, $value) {
+        STATUS_UNCHANGED => function ($identation, $property, $value) {
             return formatProperty($property, $value, $identation);
         },
-        'changed' => function ($identation, $property, $value) {
+        STATUS_CHANGED => function ($identation, $property, $value) {
             ['before' => $before, 'after' => $after] = $value;
             $beforeRow = formatProperty($property, $before, $identation, '-');
             $afterRow = formatProperty($property, $after, $identation, '+');
