@@ -15,4 +15,7 @@ Find differences between two *yaml* files:
 [![asciicast](https://asciinema.org/a/324314.svg)](https://asciinema.org/a/324314)
 
 Ability to compare nested structures:
-[![asciicast](https://asciinema.org/a/324798.svg)](https://asciinema.org/a/324798)
+[![asciicast](https://asciinema.org/a/325168.svg)](https://asciinema.org/a/325168)
+
+Available 'pretty' and 'plain' output formats:
+[![asciicast](https://asciinema.org/a/325171.svg)](https://asciinema.org/a/325171)
