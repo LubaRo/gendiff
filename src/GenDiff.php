@@ -33,8 +33,8 @@ function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 
 function buildAst(array $data1, array $data2): array
 {
-    $both_files_properties = array_merge(array_keys($data1), array_keys($data2));
-    $properties_list = getUniqueValues($both_files_properties);
+    $bothFilesProperties = array_merge(array_keys($data1), array_keys($data2));
+    $propertiesList = getUniqueValues($bothFilesProperties);
 
     $ast = array_map(function ($key) use ($data1, $data2) {
         $common = ['name' => $key];
@@ -70,12 +70,12 @@ function buildAst(array $data1, array $data2): array
                 'after' => $data2[$key]
             ]
         ]);
-    }, $properties_list);
+    }, $propertiesList);
 
     return $ast;
 }
 
-function getUniqueValues($properties_list)
+function getUniqueValues($arr)
 {
-    return array_values(array_unique($properties_list));
+    return array_values(array_unique($arr));
 }

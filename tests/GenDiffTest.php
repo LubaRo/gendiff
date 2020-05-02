@@ -8,64 +8,64 @@ use Differ\GenDiff;
 class GenDiffTest extends TestCase
 {
     public $expected = '';
-    public $files_dir = '';
+    public $dirPath = '';
 
     protected function setUp(): void
     {
-        $this->files_dir = __DIR__ . '/fixtures/';
+        $this->dirPath = __DIR__ . '/fixtures/';
     }
 
     public function testGenDiffJson()
     {
-        $beforeJson = $this->files_dir . 'before.json';
-        $afterJson = $this->files_dir . 'after.json';
+        $beforeJson = $this->dirPath . 'before.json';
+        $afterJson = $this->dirPath . 'after.json';
 
-        $expected = file_get_contents($this->files_dir . 'expected.txt');
+        $expected = file_get_contents($this->dirPath . 'expected.txt');
 
         $this->assertEquals($expected, GenDiff\genDiff($beforeJson, $afterJson));
     }
 
     public function testGenDiffYaml()
     {
-        $beforeYaml = $this->files_dir . 'before.yaml';
-        $afterYaml = $this->files_dir . 'after.yaml';
+        $beforeYaml = $this->dirPath . 'before.yaml';
+        $afterYaml = $this->dirPath . 'after.yaml';
 
-        $expected = file_get_contents($this->files_dir . 'expected.txt');
+        $expected = file_get_contents($this->dirPath . 'expected.txt');
 
         $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
     }
 
     public function testGenDiffJsonRecurse()
     {
-        $beforeJson = $this->files_dir . 'recurse_before.json';
-        $afterJson = $this->files_dir . 'recurse_after.json';
+        $beforeJson = $this->dirPath . 'recurse_before.json';
+        $afterJson = $this->dirPath . 'recurse_after.json';
 
-        $expected = file_get_contents($this->files_dir . 'recurse_expected.txt');
+        $expected = file_get_contents($this->dirPath . 'recurse_expected.txt');
 
         $this->assertEquals($expected, GenDiff\genDiff($beforeJson, $afterJson));
     }
 
     public function testGenDiffYamlRecurse()
     {
-        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
-        $afterYaml = $this->files_dir . 'recurse_after.yaml';
+        $beforeYaml = $this->dirPath . 'recurse_before.yaml';
+        $afterYaml = $this->dirPath . 'recurse_after.yaml';
 
-        $expected = file_get_contents($this->files_dir . 'recurse_expected.txt');
+        $expected = file_get_contents($this->dirPath . 'recurse_expected.txt');
 
         $this->assertEquals($expected, GenDiff\genDiff($beforeYaml, $afterYaml));
     }
 
     public function testGenDiffPlainReport()
     {
-        $expected = file_get_contents($this->files_dir . 'plain_report_expected.txt');
+        $expected = file_get_contents($this->dirPath . 'plain_report_expected.txt');
 
-        $beforeJson = $this->files_dir . 'recurse_before.json';
-        $afterJson = $this->files_dir . 'recurse_after.json';
+        $beforeJson = $this->dirPath . 'recurse_before.json';
+        $afterJson = $this->dirPath . 'recurse_after.json';
         $result1 = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
         $this->assertEquals($expected, $result1);
 
-        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
-        $afterYaml = $this->files_dir . 'recurse_after.yaml';
+        $beforeYaml = $this->dirPath . 'recurse_before.yaml';
+        $afterYaml = $this->dirPath . 'recurse_after.yaml';
         $result2 = GenDiff\genDiff($beforeJson, $afterJson, 'plain');
         $this->assertEquals($expected, $result2);
     }
@@ -119,12 +119,12 @@ class GenDiffTest extends TestCase
         ];
         $expected = json_encode($arr);
 
-        $beforeJson = $this->files_dir . 'recurse_before.json';
-        $afterJson = $this->files_dir . 'recurse_after.json';
+        $beforeJson = $this->dirPath . 'recurse_before.json';
+        $afterJson = $this->dirPath . 'recurse_after.json';
         $result1 = GenDiff\genDiff($beforeJson, $afterJson, 'json');
 
-        $beforeYaml = $this->files_dir . 'recurse_before.yaml';
-        $afterYaml = $this->files_dir . 'recurse_after.yaml';
+        $beforeYaml = $this->dirPath . 'recurse_before.yaml';
+        $afterYaml = $this->dirPath . 'recurse_after.yaml';
         $result2 = GenDiff\genDiff($beforeJson, $afterJson, 'json');
         $this->assertEquals($expected, $result2);
 
@@ -135,8 +135,8 @@ class GenDiffTest extends TestCase
     {
         $this->expectExceptionMessage("Unknown format: 'invalid_format'.");
 
-        $beforeJson = $this->files_dir . 'before.json';
-        $afterJson = $this->files_dir . 'after.json';
+        $beforeJson = $this->dirPath . 'before.json';
+        $afterJson = $this->dirPath . 'after.json';
 
         GenDiff\genDiff($beforeJson, $afterJson, 'invalid_format');
     }
@@ -145,8 +145,8 @@ class GenDiffTest extends TestCase
     {
         $this->expectExceptionMessage("File extension 'zz' is incorrect or not supported.");
 
-        $beforeJson = $this->files_dir . 'before.json';
-        $afterJson = $this->files_dir . 'wrong_extention.zz';
+        $beforeJson = $this->dirPath . 'before.json';
+        $afterJson = $this->dirPath . 'wrong_extention.zz';
 
         GenDiff\genDiff($beforeJson, $afterJson);
     }
