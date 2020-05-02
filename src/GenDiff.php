@@ -2,52 +2,15 @@
 
 namespace Differ\GenDiff;
 
-use Docopt;
-
 use function Funct\Collection\flatten;
 use function Differ\Parser\parse;
 use function Differ\Formatter\getFormattedData;
 
-define('VERSION', '1.0');
 define('DEFAULT_FORMAT', 'pretty');
 define('STATUS_NEW', 'added');
 define('STATUS_REMOVED', 'removed');
 define('STATUS_CHANGED', 'changed');
 define('STATUS_UNCHANGED', 'unchanged');
-
-function run()
-{
-    list($filePath1, $filePath2, $format) = getInputData();
-    $result = genDiff($filePath1, $filePath2, $format);
-
-    echo (PHP_EOL . $result . PHP_EOL);
-}
-
-function getInputData()
-{
-    $doc = <<<'DOCOPT'
-    Generate diff
-
-    Usage:
-      gendiff (-h|--help)
-      gendiff (-v|--version)
-      gendiff [--format <fmt>] <firstFile> <secondFile>
-
-    Options:
-      -h --help                     Show this screen
-      -v --version                  Show version
-      --format <fmt>                Report format [default: pretty]
-
-DOCOPT;
-
-    $data = Docopt::handle($doc, array('version' => VERSION));
-
-    $format = $data['--format'] ?? DEFAULT_FORMAT;
-    $filePath1 = $data['<firstFile>'] ?? '';
-    $filePath2 = $data['<secondFile>'] ?? '';
-
-    return [$filePath1, $filePath2, $format];
-}
 
 function getFileData($filePath)
 {
@@ -71,7 +34,7 @@ function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 function buildAst(array $data1, array $data2): array
 {
     $both_files_properties = array_merge(array_keys($data1), array_keys($data2));
-    $properties_list = removeDuplicateProperties($both_files_properties);
+    $properties_list = getUniqueValues($both_files_properties);
 
     $ast = array_map(function ($key) use ($data1, $data2) {
         $common = ['name' => $key];
@@ -112,7 +75,7 @@ function buildAst(array $data1, array $data2): array
     return $ast;
 }
 
-function removeDuplicateProperties($properties_list)
+function getUniqueValues($properties_list)
 {
     return array_values(array_unique($properties_list));
 }
