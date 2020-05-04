@@ -17,15 +17,21 @@ class GenDiffTest extends TestCase
         $this->dirPath = __DIR__ . '/fixtures/';
     }
 
+    public function getFullPath($fileName)
+    {
+        return "{$this->dirPath}{$fileName}";
+    }
+
     /**
      * @dataProvider filesDataProvider
      */
-    public function testGenDiffWithExpectedFixture($beforeName, $afterName, $expectedFile, $format = '')
+    public function testGenDiffWithExpectedFixture($fileNameBefore, $fileNameAfter, $fileNameExpected, $format = '')
     {
-        $before = $this->dirPath . $beforeName;
-        $after = $this->dirPath . $afterName;
+        $before = self::getFullPath($fileNameBefore);
+        $after = self::getFullPath($fileNameAfter);
+        $pathExpected = self::getFullPath($fileNameExpected);
 
-        $expected = file_get_contents($this->dirPath . $expectedFile);
+        $expected = file_get_contents($pathExpected);
         $received = $format ? GenDiff\genDiff($before, $after, $format) : GenDiff\genDiff($before, $after);
 
         $this->assertSame($expected, $received);
@@ -34,25 +40,49 @@ class GenDiffTest extends TestCase
     public function filesDataProvider()
     {
         return [
-            'plain files: json'  => ['before.json', 'after.json', 'expected.txt'],
-            'plain files: yaml' => ['before.yaml', 'after.yaml', 'expected.txt'],
-
-            'recurse json' => ['recurse_before.json', 'recurse_after.json', 'recurse_expected.txt'],
-            'recurse yaml' => ['recurse_before.yaml', 'recurse_after.yaml', 'recurse_expected.txt'],
-
-            'plain report: json' => ['recurse_before.json', 'recurse_after.json', 'plain_report_expected.txt', 'plain'],
-            'plain report: yaml' => ['recurse_before.yaml', 'recurse_after.yaml', 'plain_report_expected.txt', 'plain']
+            'plain files: json'  => [
+                'before.json',
+                'after.json',
+                'expected.txt'
+            ],
+            'plain files: yaml' => [
+                'before.yaml',
+                'after.yaml',
+                'expected.txt'
+            ],
+            'recurse json' => [
+                'recurse_before.json',
+                'recurse_after.json',
+                'recurse_expected.txt'
+            ],
+            'recurse yaml' => [
+                'recurse_before.yaml',
+                'recurse_after.yaml',
+                'recurse_expected.txt'
+            ],
+            'plain report: json' => [
+                'recurse_before.json',
+                'recurse_after.json',
+                'plain_report_expected.txt',
+                'plain'
+            ],
+            'plain report: yaml' => [
+                'recurse_before.yaml',
+                'recurse_after.yaml',
+                'plain_report_expected.txt',
+                'plain'
+            ]
         ];
     }
 
     /**
      * @dataProvider jsonReportProvider
      */
-    public function testGenDiffJsonReport($beforeName, $afterName, $expected)
+    public function testGenDiffJsonReport($fileNameBefore, $fileNameAfter, $expected)
     {
-        $before = $this->dirPath . $beforeName;
-        $after = $this->dirPath . $afterName;
-        $received = GenDiff\genDiff($before, $after, 'json');
+        $pathBefore = self::getFullPath($fileNameBefore);
+        $pathAfter = self::getFullPath($fileNameAfter);
+        $received = GenDiff\genDiff($pathBefore, $pathAfter, 'json');
 
         $this->assertSame($expected, $received);
     }
@@ -107,8 +137,16 @@ class GenDiffTest extends TestCase
         $expected = json_encode($arr);
 
         return [
-            'json report: json' => ['recurse_before.json', 'recurse_after.json', $expected],
-            'json report: yaml' => ['recurse_before.yaml', 'recurse_after.yaml', $expected]
+            'json report: json' => [
+                'recurse_before.json',
+                'recurse_after.json',
+                $expected
+            ],
+            'json report: yaml' => [
+                'recurse_before.yaml',
+                'recurse_after.yaml',
+                $expected
+            ]
         ];
     }
 
