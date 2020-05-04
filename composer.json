@@ -25,7 +25,8 @@
         ]
     },
     "scripts": {
-        "phpcs": "phpcs"
+        "phpcs": "phpcs",
+        "phpunit": "phpunit"
     },
     "require": {
         "docopt/docopt": "^1.0",
