@@ -157,8 +157,8 @@ class GenDiffTest extends TestCase
     {
         $this->expectExceptionMessage("Unknown format: 'invalid_format'.");
 
-        $beforeJson = $this->dirPath . 'before.json';
-        $afterJson = $this->dirPath . 'after.json';
+        $beforeJson = self::getFullPath('before.json');
+        $afterJson = self::getFullPath('after.json');
 
         GenDiff\genDiff($beforeJson, $afterJson, 'invalid_format');
     }
@@ -167,8 +167,8 @@ class GenDiffTest extends TestCase
     {
         $this->expectExceptionMessage("File extension 'zz' is incorrect or not supported.");
 
-        $beforeJson = $this->dirPath . 'before.json';
-        $afterJson = $this->dirPath . 'wrong_extention.zz';
+        $beforeJson = self::getFullPath('before.json');
+        $afterJson = self::getFullPath('wrong_extention.zz');
 
         GenDiff\genDiff($beforeJson, $afterJson);
     }
