@@ -15,9 +15,6 @@ class GenDiffTest extends TestCase
     protected function setUp(): void
     {
         $this->dirPath = __DIR__ . '/fixtures/';
-
-        $pathExpected = self::getFixturesDirPath('json_report_expected.txt');
-        $result = file_get_contents($pathExpected);
     }
 
     public function getFixturesDirPath($fileName)
