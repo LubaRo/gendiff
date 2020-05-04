@@ -4,6 +4,8 @@ namespace Differ\Cli;
 
 use Docopt;
 
+use function Differ\GenDiff\genDiff;
+
 const VERSION = '1.0';
 
 function run()
