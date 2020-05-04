@@ -15,59 +15,9 @@ class GenDiffTest extends TestCase
     protected function setUp(): void
     {
         $this->dirPath = __DIR__ . '/fixtures/';
-        $this->prepareJsonReportFixture();
-    }
 
-    protected function prepareJsonReportFixture()
-    {
-        $arr = [
-            STATUS_CHANGED => [
-                [
-                    'path' => 'group1/baz',
-                    'new_value' => 'bars',
-                    'old_value' => 'bas'
-                ],
-            ],
-            STATUS_REMOVED => [
-                [
-                    'path' => 'common/setting2',
-                    'value' => 200
-                ],
-                [
-                    'path' => 'common/setting6',
-                    'value' => [
-                        'key' => 'value'
-                    ]
-                ],
-                [
-                    'path' => 'group2',
-                    'value' => [
-                        'abc' => 12345
-                    ]
-                ]
-            ],
-            STATUS_NEW => [
-                [
-                    'path' => 'common/setting4',
-                    'value' => 'blah blah'
-                ],
-                [
-                    'path' => 'common/setting5',
-                    'value' => [
-                        'key5' => 'value5'
-                    ]
-                ],
-                [
-                    'path' => 'group3',
-                    'value' => [
-                        'fee' => 100500
-                    ]
-                ]
-            ]
-        ];
-        $result = json_encode($arr);
-        $filePath = self::getFixturesDirPath('json_report_expected.txt');
-        file_put_contents($filePath, $result);
+        $pathExpected = self::getFixturesDirPath('json_report_expected.txt');
+        $result = file_get_contents($pathExpected);
     }
 
     public function getFixturesDirPath($fileName)
