@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use Differ\GenDiff;
 
 use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
+use const Differ\GenDiff\{FORMAT_PRETTY, FORMAT_PLAIN, FORMAT_JSON};
 
 class GenDiffTest extends TestCase
 {
@@ -53,24 +54,26 @@ class GenDiffTest extends TestCase
             'recurse json' => [
                 'recurse_before.json',
                 'recurse_after.json',
-                'recurse_expected.txt'
+                'recurse_expected.txt',
+                FORMAT_PRETTY
             ],
             'recurse yaml' => [
                 'recurse_before.yaml',
                 'recurse_after.yaml',
-                'recurse_expected.txt'
+                'recurse_expected.txt',
+                FORMAT_PRETTY
             ],
             'plain report: json' => [
                 'recurse_before.json',
                 'recurse_after.json',
                 'plain_report_expected.txt',
-                'plain'
+                FORMAT_PLAIN
             ],
             'plain report: yaml' => [
                 'recurse_before.yaml',
                 'recurse_after.yaml',
                 'plain_report_expected.txt',
-                'plain'
+                 FORMAT_PLAIN
             ]
         ];
     }
@@ -82,7 +85,7 @@ class GenDiffTest extends TestCase
     {
         $pathBefore = self::getFullPath($fileNameBefore);
         $pathAfter = self::getFullPath($fileNameAfter);
-        $received = GenDiff\genDiff($pathBefore, $pathAfter, 'json');
+        $received = GenDiff\genDiff($pathBefore, $pathAfter, FORMAT_JSON);
 
         $this->assertSame($expected, $received);
     }

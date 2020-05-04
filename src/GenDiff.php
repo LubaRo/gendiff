@@ -6,7 +6,11 @@ use function Funct\Collection\flatten;
 use function Differ\Parser\parse;
 use function Differ\Formatter\getFormattedData;
 
-const DEFAULT_FORMAT = 'pretty';
+const FORMAT_PRETTY = 'pretty';
+const FORMAT_PLAIN = 'plain';
+const FORMAT_JSON = 'json';
+const DEFAULT_FORMAT = FORMAT_PRETTY;
+
 const STATUS_NEW = 'added';
 const STATUS_REMOVED = 'removed';
 const STATUS_CHANGED = 'changed';
