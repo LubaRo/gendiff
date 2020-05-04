@@ -10,7 +10,6 @@ use const Differ\GenDiff\{FORMAT_PRETTY, FORMAT_PLAIN, FORMAT_JSON};
 
 class GenDiffTest extends TestCase
 {
-    public $expected = '';
     public $dirPath = '';
 
     protected function setUp(): void
