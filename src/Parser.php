@@ -2,7 +2,7 @@
 
 namespace Differ\Parser;
 
-use function Differ\Parsers\Yaml\parse as parseYaml;
+use Symfony\Component\Yaml\Yaml;
 
 function parse($data, $extension)
 {
@@ -10,7 +10,7 @@ function parse($data, $extension)
         case 'json':
             return json_decode($data, true);
         case 'yaml':
-            return parseYaml($data);
+            return Yaml::parse($data);
         default:
             throw new \Exception("File extension '{$extension}' is incorrect or not supported.");
     }

@@ -17,7 +17,6 @@
             "src/Cli.php",
             "src/GenDiff.php",
             "src/Parser.php",
-            "src/Parsers/Yaml.php",
             "src/Formatter.php",
             "src/Formatters/Plain.php",
             "src/Formatters/Pretty.php",
