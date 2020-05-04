@@ -17,5 +17,4 @@ try {
 } catch (\Exception $e) {
     $error_message = $e->getMessage();
     echo $error_message . "\n";
-    exit();
 }
