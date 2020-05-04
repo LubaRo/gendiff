@@ -6,11 +6,11 @@ use function Funct\Collection\flatten;
 use function Differ\Parser\parse;
 use function Differ\Formatter\getFormattedData;
 
-define('DEFAULT_FORMAT', 'pretty');
-define('STATUS_NEW', 'added');
-define('STATUS_REMOVED', 'removed');
-define('STATUS_CHANGED', 'changed');
-define('STATUS_UNCHANGED', 'unchanged');
+const DEFAULT_FORMAT = 'pretty';
+const STATUS_NEW = 'added';
+const STATUS_REMOVED = 'removed';
+const STATUS_CHANGED = 'changed';
+const STATUS_UNCHANGED = 'unchanged';
 
 function getFileData($filePath)
 {

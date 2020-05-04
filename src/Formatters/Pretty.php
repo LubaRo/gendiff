@@ -4,7 +4,9 @@ namespace Differ\Formatters\Pretty;
 
 use function Funct\Collection\flatten;
 
-define('IDENTATION', '    ');
+use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
+
+const IDENTATION = '    ';
 
 function formatProperty($property, $value, $identation, $sign = ' ')
 {

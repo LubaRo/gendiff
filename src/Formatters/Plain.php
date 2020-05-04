@@ -2,6 +2,8 @@
 
 namespace Differ\Formatters\Plain;
 
+use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
+
 function format($data)
 {
     $propertiesRows = getPropertiesRows($data);

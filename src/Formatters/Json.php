@@ -2,6 +2,8 @@
 
 namespace Differ\Formatters\Json;
 
+use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
+
 function format($data)
 {
     $diff = getPropertiesData($data);
