@@ -10,7 +10,7 @@ function format($data)
     $filtered = filterDiff($diff);
     $sorted = sortDiff($filtered);
 
-    return json_encode($sorted);
+    return json_encode($sorted, JSON_PRETTY_PRINT);
 }
 
 function getPropertiesData($propertiesData, $path = [])
