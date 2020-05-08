@@ -26,8 +26,8 @@ function getFileData($filePath)
 
 function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 {
-    $fileContent1 = (array) getFileData($filePath1);
-    $fileContent2 = (array) getFileData($filePath2);
+    $fileContent1 = getFileData($filePath1);
+    $fileContent2 = getFileData($filePath2);
 
     $diff = buildAst($fileContent1, $fileContent2);
     $formatResult = getFormattedData($diff, $format);
