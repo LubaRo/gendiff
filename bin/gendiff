@@ -12,9 +12,4 @@ if (file_exists($autoloadPath1)) {
     require_once $autoloadPath2;
 }
 
-try {
-    run();
-} catch (\Exception $e) {
-    $error_message = $e->getMessage();
-    echo $error_message . "\n";
-}
+run();
