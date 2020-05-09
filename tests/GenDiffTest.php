@@ -17,22 +17,33 @@ class GenDiffTest extends TestCase
         $this->dirPath = __DIR__ . '/fixtures/';
     }
 
-    public function getFixturesDirPath($fileName)
+    public function getFixtureFullPath($fileName)
     {
         return "{$this->dirPath}{$fileName}";
+    }
+
+    public function getTestFilePath($prefix, $extension)
+    {
+        $fileName = "{$prefix}.{$extension}";
+        return self::getFixtureFullPath($fileName);
+    }
+    public function getExpectedFilePath($reportFormat)
+    {
+        $fileName = "expected/{$reportFormat}_report.txt";
+        return self::getFixtureFullPath($fileName);
     }
 
     /**
      * @dataProvider genDiffDataProvider
      */
-    public function testGenDiff($fileNameBefore, $fileNameAfter, $fileNameExpected, $format)
+    public function testGenDiff($fileExt, $reportFormat)
     {
-        $before = self::getFixturesDirPath($fileNameBefore);
-        $after = self::getFixturesDirPath($fileNameAfter);
-        $pathExpected = self::getFixturesDirPath($fileNameExpected);
+        $pathBefore = self::getTestFilePath('before', $fileExt);
+        $pathAfter = self::getTestFilePath('after', $fileExt);
+        $pathExpected = self::getExpectedFilePath($reportFormat);
 
         $expected = file_get_contents($pathExpected);
-        $received = GenDiff\genDiff($before, $after, $format);
+        $received = GenDiff\genDiff($pathBefore, $pathAfter, $reportFormat);
 
         $this->assertSame($expected, $received);
     }
@@ -40,54 +51,14 @@ class GenDiffTest extends TestCase
     public function genDiffDataProvider()
     {
         return [
-            'plain files: json'  => [
-                'before.json',
-                'after.json',
-                'expected.txt',
-                FORMAT_PRETTY
-            ],
-            'plain files: yaml' => [
-                'before.yaml',
-                'after.yaml',
-                'expected.txt',
-                FORMAT_PRETTY
-            ],
-            'recurse json' => [
-                'recurse_before.json',
-                'recurse_after.json',
-                'recurse_expected.txt',
-                FORMAT_PRETTY
-            ],
-            'recurse yaml' => [
-                'recurse_before.yaml',
-                'recurse_after.yaml',
-                'recurse_expected.txt',
-                FORMAT_PRETTY
-            ],
-            'plain report: json' => [
-                'recurse_before.json',
-                'recurse_after.json',
-                'plain_report_expected.txt',
-                FORMAT_PLAIN
-            ],
-            'plain report: yaml' => [
-                'recurse_before.yaml',
-                'recurse_after.yaml',
-                'plain_report_expected.txt',
-                 FORMAT_PLAIN
-            ],
-            'json report: json' => [
-                'recurse_before.json',
-                'recurse_after.json',
-                'json_report_expected.txt',
-                FORMAT_JSON
-            ],
-            'json report: yaml' => [
-                'recurse_before.yaml',
-                'recurse_after.yaml',
-                'json_report_expected.txt',
-                FORMAT_JSON
-            ]
+            'pretty report: json' => ['json', FORMAT_PRETTY],
+            'pretty report: yaml' => ['yaml', FORMAT_PRETTY],
+
+            'plain report: json' => ['json', FORMAT_PLAIN],
+            'plain report: yaml' => ['yaml', FORMAT_PLAIN],
+
+            'json report: json' => ['json', FORMAT_JSON],
+            'json report: yaml' => ['yaml', FORMAT_JSON]
         ];
     }
 
@@ -95,19 +66,19 @@ class GenDiffTest extends TestCase
     {
         $this->expectExceptionMessage("Unknown format: 'invalid_format'.");
 
-        $beforeJson = self::getFixturesDirPath('before.json');
-        $afterJson = self::getFixturesDirPath('after.json');
+        $pathBefore = self::getTestFilePath('before', 'json');
+        $pathAfter = self::getTestFilePath('after', 'json');
 
-        GenDiff\genDiff($beforeJson, $afterJson, 'invalid_format');
+        GenDiff\genDiff($pathBefore, $pathAfter, 'invalid_format');
     }
 
     public function testFormatterException()
     {
-        $this->expectExceptionMessage("File extension 'zz' is incorrect or not supported.");
+        $this->expectExceptionMessage("Data type 'zz' is incorrect or not supported.");
 
-        $beforeJson = self::getFixturesDirPath('before.json');
-        $afterJson = self::getFixturesDirPath('wrong_extention.zz');
+        $pathBefore = self::getTestFilePath('before', 'json');
+        $pathAfter = self::getTestFilePath('wrong_extention', 'zz');
 
-        GenDiff\genDiff($beforeJson, $afterJson);
+        GenDiff\genDiff($pathBefore, $pathAfter);
     }
 }
