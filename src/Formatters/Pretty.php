@@ -40,10 +40,6 @@ function getPropertyFormatter($status)
 
 function format($data, $nestedLevel = 0)
 {
-    if (empty($data)) {
-        return '{}';
-    }
-
     $leftIdentation = str_repeat(IDENTATION, $nestedLevel);
 
     $propertiesData = array_reduce($data, function ($acc, $propertyData) use ($leftIdentation, $nestedLevel) {

@@ -16,18 +16,26 @@ const STATUS_REMOVED = 'removed';
 const STATUS_CHANGED = 'changed';
 const STATUS_UNCHANGED = 'unchanged';
 
-function getFileData($filePath)
+function getParsedData($filePath)
 {
+    if (!file_exists($filePath)) {
+        throw new \Exception("File '{$filePath}' does not exist");
+    }
     $data = file_get_contents($filePath);
     $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+    $parsedData = parse($data, $extension);
 
-    return parse($data, $extension);
+    if (is_null($parsedData)) {
+        throw new \Exception("Unable to parse correctly '{$filePath}'");
+    }
+
+    return $parsedData;
 }
 
 function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 {
-    $fileContent1 = getFileData($filePath1);
-    $fileContent2 = getFileData($filePath2);
+    $fileContent1 = getParsedData($filePath1);
+    $fileContent2 = getParsedData($filePath2);
 
     $diff = buildAst($fileContent1, $fileContent2);
     $formatResult = getFormattedData($diff, $format);

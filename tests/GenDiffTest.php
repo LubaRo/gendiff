@@ -72,7 +72,7 @@ class GenDiffTest extends TestCase
         GenDiff\genDiff($pathBefore, $pathAfter, 'invalid_format');
     }
 
-    public function testFormatterException()
+    public function testFormatterTypeException()
     {
         $this->expectExceptionMessage("Data type 'zz' is incorrect or not supported.");
 
@@ -80,5 +80,20 @@ class GenDiffTest extends TestCase
         $pathAfter = self::getTestFilePath('wrong_extention', 'zz');
 
         GenDiff\genDiff($pathBefore, $pathAfter);
+    }
+
+    public function testParseException()
+    {
+        $wrongFilePath = self::getTestFilePath('empty', 'json');
+        $this->expectExceptionMessage("Unable to parse correctly '{$wrongFilePath}'");
+
+        GenDiff\genDiff($wrongFilePath, $wrongFilePath);
+    }
+
+    public function testFileNotExistsException()
+    {
+        $this->expectExceptionMessage("File 'notExists' does not exist");
+
+        GenDiff\genDiff('notExists', 'notExists');
     }
 }
