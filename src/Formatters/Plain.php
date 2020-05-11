@@ -2,7 +2,7 @@
 
 namespace Differ\Formatters\Plain;
 
-use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
+use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED, STATUS_COMPLEX};
 
 function format($data)
 {
@@ -17,19 +17,13 @@ function format($data)
 function getPropertiesRows($propertiesData, $path = [])
 {
     $reduce  = function ($acc, $property) use (&$reduce, $path) {
-        $children = $property['children'] ?? [];
         $name = $property['name'] ?? '';
         $newPath = [...$path, $name];
 
-        if (!$children) {
-            $newData = getPropertyRow($property, $newPath);
-            $acc[] = $newData;
-            return $acc;
-        }
+        $newData = getPropertyRow($property, $newPath);
+        $newAcc = is_array($newData) ? array_merge($acc, $newData) : [...$acc, $newData];
 
-        $childrenData = getPropertiesRows($children, $newPath);
-
-        return array_merge($acc, $childrenData);
+        return $newAcc;
     };
 
     $result = array_reduce($propertiesData, function ($acc, $property) use ($reduce) {
@@ -41,12 +35,11 @@ function getPropertiesRows($propertiesData, $path = [])
 
 function getPropertyRow($propertyData, $fullPath)
 {
-    $status = $propertyData['status'] ?? '';
+    ['status' => $status, 'value' => $value] = $propertyData;
     $fullName = implode('.', $fullPath);
-    $value = $propertyData['value'] ?? '';
+    $formatter = getPropertyFormatter($status);
 
-    $format = getPropertyFormatter($status);
-    return $format($fullName, $value);
+    return $formatter($fullName, $value, $fullPath);
 }
 
 function getPropertyFormatter($status)
@@ -63,12 +56,14 @@ function getPropertyFormatter($status)
             return '';
         },
         STATUS_CHANGED => function ($name, $value) {
-
             ['before' => $before, 'after' => $after] = $value;
             $normalizedBefore = prepareValue($before);
             $normalizedAfter = prepareValue($after);
 
             return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
+        },
+        STATUS_COMPLEX => function ($name, $value, $fullPath) {
+            return getPropertiesRows($value, $fullPath);
         }
     ];
 

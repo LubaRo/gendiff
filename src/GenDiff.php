@@ -15,6 +15,7 @@ const STATUS_NEW = 'added';
 const STATUS_REMOVED = 'removed';
 const STATUS_CHANGED = 'changed';
 const STATUS_UNCHANGED = 'unchanged';
+const STATUS_COMPLEX = 'complex';
 
 function readFile($filePath)
 {
@@ -77,7 +78,8 @@ function buildAst(array $data1, array $data2): array
         }
         if (is_array($data1[$key]) && is_array($data1[$key])) {
             return array_merge($common, [
-                'children' =>  buildAst($data1[$key], $data2[$key])
+                'status' => STATUS_COMPLEX,
+                'value' =>  buildAst($data1[$key], $data2[$key])
             ]);
         }
         if ($data1[$key] === $data2[$key]) {
