@@ -92,7 +92,7 @@ class GenDiffTest extends TestCase
 
     public function testFileNotExistsException()
     {
-        $this->expectExceptionMessage("File 'notExists' does not exist");
+        $this->expectExceptionMessage("Cannot read file: 'notExists'");
 
         GenDiff\genDiff('notExists', 'notExists');
     }

@@ -19,7 +19,7 @@ const STATUS_UNCHANGED = 'unchanged';
 function readFile($filePath)
 {
     if (!is_readable($filePath)) {
-        throw new \Exception("File '{$filePath}' does not exist");
+        throw new \Exception("Cannot read file: '{$filePath}'");
     }
     $data = file_get_contents($filePath);
 
