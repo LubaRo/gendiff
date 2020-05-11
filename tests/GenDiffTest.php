@@ -62,7 +62,7 @@ class GenDiffTest extends TestCase
         ];
     }
 
-    public function testParserException()
+    public function testParserFormatException()
     {
         $this->expectExceptionMessage("Unknown format: 'invalid_format'.");
 
