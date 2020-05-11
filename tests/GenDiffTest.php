@@ -5,7 +5,6 @@ namespace Differ;
 use PHPUnit\Framework\TestCase;
 use Differ\GenDiff;
 
-use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED};
 use const Differ\GenDiff\{FORMAT_PRETTY, FORMAT_PLAIN, FORMAT_JSON};
 
 class GenDiffTest extends TestCase
