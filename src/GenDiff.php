@@ -2,7 +2,7 @@
 
 namespace Differ\GenDiff;
 
-use function Funct\Collection\flatten;
+use function Funct\Collection\union;
 use function Differ\Parser\parse;
 use function Differ\Formatter\getFormattedData;
 
@@ -53,8 +53,8 @@ function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 
 function getArrayUnion($arr1, $arr2)
 {
-    $allValues = array_merge($arr1, $arr2);
-    return array_values(array_unique($allValues));
+    $result = union($arr1, $arr2);
+    return array_values($result);
 }
 
 function buildAst(array $data1, array $data2): array
