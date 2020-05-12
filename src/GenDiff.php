@@ -2,7 +2,7 @@
 
 namespace Differ\GenDiff;
 
-use function Funct\Collection\flatten;
+use function Funct\Collection\union;
 use function Differ\Parser\parse;
 use function Differ\Formatter\getFormattedData;
 
@@ -15,19 +15,35 @@ const STATUS_NEW = 'added';
 const STATUS_REMOVED = 'removed';
 const STATUS_CHANGED = 'changed';
 const STATUS_UNCHANGED = 'unchanged';
+const STATUS_COMPLEX = 'complex';
 
-function getFileData($filePath)
+function readFile($filePath)
 {
+    if (!is_readable($filePath)) {
+        throw new \Exception("Cannot read file: '{$filePath}'");
+    }
     $data = file_get_contents($filePath);
-    $extension = pathinfo($filePath, PATHINFO_EXTENSION);
 
-    return parse($data, $extension);
+    return $data;
+}
+
+function getParsedData($filePath)
+{
+    $data = readFile($filePath);
+    $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+    $parsedData = parse($data, $extension);
+
+    if (is_null($parsedData)) {
+        throw new \Exception("Unable to parse correctly '{$filePath}'");
+    }
+
+    return $parsedData;
 }
 
 function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
 {
-    $fileContent1 = (array) getFileData($filePath1);
-    $fileContent2 = (array) getFileData($filePath2);
+    $fileContent1 = getParsedData($filePath1);
+    $fileContent2 = getParsedData($filePath2);
 
     $diff = buildAst($fileContent1, $fileContent2);
     $formatResult = getFormattedData($diff, $format);
@@ -35,10 +51,15 @@ function genDiff($filePath1, $filePath2, $format = DEFAULT_FORMAT)
     return $formatResult;
 }
 
+function getArrayUnion($arr1, $arr2)
+{
+    $result = union($arr1, $arr2);
+    return array_values($result);
+}
+
 function buildAst(array $data1, array $data2): array
 {
-    $bothFilesProperties = array_merge(array_keys($data1), array_keys($data2));
-    $propertiesList = getUniqueValues($bothFilesProperties);
+    $properties = getArrayUnion(array_keys($data1), array_keys($data2));
 
     $ast = array_map(function ($key) use ($data1, $data2) {
         $common = ['name' => $key];
@@ -57,7 +78,8 @@ function buildAst(array $data1, array $data2): array
         }
         if (is_array($data1[$key]) && is_array($data1[$key])) {
             return array_merge($common, [
-                'children' =>  buildAst($data1[$key], $data2[$key])
+                'status' => STATUS_COMPLEX,
+                'value' =>  buildAst($data1[$key], $data2[$key])
             ]);
         }
         if ($data1[$key] === $data2[$key]) {
@@ -74,12 +96,7 @@ function buildAst(array $data1, array $data2): array
                 'after' => $data2[$key]
             ]
         ]);
-    }, $propertiesList);
+    }, $properties);
 
     return $ast;
-}
-
-function getUniqueValues($arr)
-{
-    return array_values(array_unique($arr));
 }

@@ -3,6 +3,8 @@
 
 use function Differ\Cli\run;
 
+const EXCEPTION_ERROR_CODE = 4;
+
 $autoloadPath1 = __DIR__ . '/../../../autoload.php';
 $autoloadPath2 = __DIR__ . '/../vendor/autoload.php';
 
@@ -15,6 +17,13 @@ if (file_exists($autoloadPath1)) {
 try {
     run();
 } catch (\Exception $e) {
-    $error_message = $e->getMessage();
-    echo $error_message . "\n";
+    $errorMessage = $e->getMessage();
+    $filePath = $e->getFile();
+    $line = $e->getLine();
+
+    $text = "\ngendiff: $errorMessage"
+        . "\nAn error has occurred in $filePath::$line\n";
+
+    fwrite(STDERR, $text);
+    exit(EXCEPTION_ERROR_CODE);
 }
