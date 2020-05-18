@@ -11,14 +11,9 @@ function format($data, $nestedLevel = 0)
     $leftIdentation = str_repeat(IDENTATION, $nestedLevel);
 
     $propertiesData = array_reduce($data, function ($acc, $propertyData) use ($leftIdentation, $nestedLevel) {
-        [
-            'name' => $name,
-            'value' => $value,
-            'status' => $status
-        ] = $propertyData;
-
+        $status = $propertyData['status'];
         $propertyFormatter = getPropertyFormatter($status);
-        $acc[] = $propertyFormatter($leftIdentation, $name, $value, $nestedLevel);
+        $acc[] = $propertyFormatter($leftIdentation, $propertyData, $nestedLevel);
 
         return $acc;
     }, []);
@@ -37,26 +32,27 @@ function formatProperty($property, $value, $identation, $sign = ' ')
 function getPropertyFormatter($status)
 {
     $statuses = [
-        STATUS_NEW => function ($identation, $property, $value) {
-            return formatProperty($property, $value, $identation, '+');
+        STATUS_NEW => function ($identation, $propertyData) {
+            return formatProperty($propertyData['name'], $propertyData['value'], $identation, '+');
         },
-        STATUS_REMOVED => function ($identation, $property, $value) {
-            return formatProperty($property, $value, $identation, '-');
+        STATUS_REMOVED => function ($identation, $propertyData) {
+            return formatProperty($propertyData['name'], $propertyData['value'], $identation, '-');
         },
-        STATUS_UNCHANGED => function ($identation, $property, $value) {
-            return formatProperty($property, $value, $identation);
+        STATUS_UNCHANGED => function ($identation, $propertyData) {
+            return formatProperty($propertyData['name'], $propertyData['value'], $identation);
         },
-        STATUS_CHANGED => function ($identation, $property, $value) {
-            ['before' => $before, 'after' => $after] = $value;
-            $beforeRow = formatProperty($property, $before, $identation, '-');
-            $afterRow = formatProperty($property, $after, $identation, '+');
+        STATUS_CHANGED => function ($identation, $propertyData) {
+            ['valueBefore' => $before, 'valueAfter' => $after] = $propertyData;
+            $beforeRow = formatProperty($propertyData['name'], $before, $identation, '-');
+            $afterRow = formatProperty($propertyData['name'], $after, $identation, '+');
 
             return "$afterRow\n$beforeRow";
         },
-        STATUS_COMPLEX => function ($identation, $property, $value, $nestedLevel) {
-            $formattedValue = format($value, $nestedLevel + 1);
+        STATUS_COMPLEX => function ($identation, $propertyData, $nestedLevel) {
+            $formattedValue = format($propertyData['children'], $nestedLevel + 1);
             $leftIdentation = IDENTATION . $identation;
-            return $leftIdentation . "$property: $formattedValue";
+
+            return $leftIdentation . "{$propertyData['name']}: $formattedValue";
         }
     ];
 

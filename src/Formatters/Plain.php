@@ -33,37 +33,44 @@ function getPropertiesRows($propertiesData, $path = [])
     return $result;
 }
 
+function getFullName($path)
+{
+    return implode('.', $path);
+}
+
 function getPropertyRow($propertyData, $fullPath)
 {
-    ['status' => $status, 'value' => $value] = $propertyData;
-    $fullName = implode('.', $fullPath);
+    $status = $propertyData['status'];
     $formatter = getPropertyFormatter($status);
 
-    return $formatter($fullName, $value, $fullPath);
+    return $formatter($propertyData, $fullPath);
 }
 
 function getPropertyFormatter($status)
 {
     $statuses = [
-        STATUS_NEW => function ($name, $value) {
-            $nomalizedValue = prepareValue($value);
+        STATUS_NEW => function ($propertyData, $fullPath) {
+            $nomalizedValue = prepareValue($propertyData['value']);
+            $name = getFullName($fullPath);
             return "Property '$name' was added with value: '$nomalizedValue'";
         },
-        STATUS_REMOVED => function ($name) {
+        STATUS_REMOVED => function ($propertyData, $fullPath) {
+            $name = getFullName($fullPath);
             return "Property '$name' was removed";
         },
         STATUS_UNCHANGED => function () {
             return null;
         },
-        STATUS_CHANGED => function ($name, $value) {
-            ['before' => $before, 'after' => $after] = $value;
+        STATUS_CHANGED => function ($propertyData, $fullPath) {
+            ['valueBefore' => $before, 'valueAfter' => $after] = $propertyData;
             $normalizedBefore = prepareValue($before);
             $normalizedAfter = prepareValue($after);
+            $name = getFullName($fullPath);
 
             return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
         },
-        STATUS_COMPLEX => function ($name, $value, $fullPath) {
-            return getPropertiesRows($value, $fullPath);
+        STATUS_COMPLEX => function ($propertyData, $fullPath) {
+            return getPropertiesRows($propertyData['children'], $fullPath);
         }
     ];
 
