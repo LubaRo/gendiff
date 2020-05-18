@@ -4,33 +4,27 @@ namespace Differ\Formatters\Plain;
 
 use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED, STATUS_COMPLEX};
 
-function format($data)
+function format($data, $path = [])
 {
-    $propertiesRows = getPropertiesRows($data);
+    $reduce  = function ($acc, $property) use (&$reduce, $path) {
+        $name = $property['name'];
+        $newPath = [...$path, $name];
+
+        $formattedProperty = getPropertyRow($property, $newPath);
+        $newAcc = is_array($formattedProperty) ? array_merge($acc, $formattedProperty) : [...$acc, $formattedProperty];
+
+        return $newAcc;
+    };
+
+    $propertiesRows = array_reduce($data, function ($acc, $property) use ($reduce) {
+        return $reduce($acc, $property);
+    }, []);
+
     $filteredRows = array_filter($propertiesRows, function ($elem) {
         return !empty($elem);
     });
 
     return implode("\n", $filteredRows);
-}
-
-function getPropertiesRows($propertiesData, $path = [])
-{
-    $reduce  = function ($acc, $property) use (&$reduce, $path) {
-        $name = $property['name'] ?? '';
-        $newPath = [...$path, $name];
-
-        $newData = getPropertyRow($property, $newPath);
-        $newAcc = is_array($newData) ? array_merge($acc, $newData) : [...$acc, $newData];
-
-        return $newAcc;
-    };
-
-    $result = array_reduce($propertiesData, function ($acc, $property) use ($reduce) {
-        return $reduce($acc, $property);
-    }, []);
-
-    return $result;
 }
 
 function getFullName($path)
@@ -44,6 +38,11 @@ function getPropertyRow($propertyData, $fullPath)
     $formatter = getPropertyFormatter($status);
 
     return $formatter($propertyData, $fullPath);
+}
+
+function prepareValue($value)
+{
+    return is_array($value) ? 'complex value' : $value;
 }
 
 function getPropertyFormatter($status)
@@ -70,14 +69,9 @@ function getPropertyFormatter($status)
             return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
         },
         STATUS_COMPLEX => function ($propertyData, $fullPath) {
-            return getPropertiesRows($propertyData['children'], $fullPath);
+            return format($propertyData['children'], $fullPath);
         }
     ];
 
     return $statuses[$status];
-}
-
-function prepareValue($value)
-{
-    return is_array($value) ? 'complex value' : $value;
 }
