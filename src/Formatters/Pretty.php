@@ -10,13 +10,12 @@ function format($data, $nestedLevel = 0)
 {
     $leftIdentation = str_repeat(IDENTATION, $nestedLevel);
 
-    $propertiesData = array_reduce($data, function ($acc, $propertyData) use ($leftIdentation, $nestedLevel) {
+    $propertiesData = array_map(function ($propertyData) use ($leftIdentation, $nestedLevel) {
         $status = $propertyData['status'];
         $propertyFormatter = getPropertyFormatter($status);
-        $acc[] = $propertyFormatter($leftIdentation, $propertyData, $nestedLevel);
 
-        return $acc;
-    }, []);
+        return $propertyFormatter($leftIdentation, $propertyData, $nestedLevel);
+    }, $data);
 
     $propertiesBlock = implode("\n", $propertiesData);
 
