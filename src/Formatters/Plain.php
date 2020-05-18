@@ -53,7 +53,7 @@ function getPropertyFormatter($status)
             return "Property '$name' was removed";
         },
         STATUS_UNCHANGED => function () {
-            return '';
+            return null;
         },
         STATUS_CHANGED => function ($name, $value) {
             ['before' => $before, 'after' => $after] = $value;
