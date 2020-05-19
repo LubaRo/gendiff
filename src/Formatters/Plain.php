@@ -4,9 +4,22 @@ namespace Differ\Formatters\Plain;
 
 use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNCHANGED, STATUS_COMPLEX};
 
-function format($data)
+function format($data, $path = [])
 {
-    $propertiesRows = getPropertiesRows($data);
+    $reduce  = function ($acc, $property) use (&$reduce, $path) {
+        $name = $property['name'];
+        $newPath = [...$path, $name];
+
+        $formattedProperty = getPropertyRow($property, $newPath);
+        $newAcc = is_array($formattedProperty) ? array_merge($acc, $formattedProperty) : [...$acc, $formattedProperty];
+
+        return $newAcc;
+    };
+
+    $propertiesRows = array_reduce($data, function ($acc, $property) use ($reduce) {
+        return $reduce($acc, $property);
+    }, []);
+
     $filteredRows = array_filter($propertiesRows, function ($elem) {
         return !empty($elem);
     });
@@ -14,63 +27,51 @@ function format($data)
     return implode("\n", $filteredRows);
 }
 
-function getPropertiesRows($propertiesData, $path = [])
+function getFullName($path)
 {
-    $reduce  = function ($acc, $property) use (&$reduce, $path) {
-        $name = $property['name'] ?? '';
-        $newPath = [...$path, $name];
-
-        $newData = getPropertyRow($property, $newPath);
-        $newAcc = is_array($newData) ? array_merge($acc, $newData) : [...$acc, $newData];
-
-        return $newAcc;
-    };
-
-    $result = array_reduce($propertiesData, function ($acc, $property) use ($reduce) {
-        return $reduce($acc, $property);
-    }, []);
-
-    return $result;
+    return implode('.', $path);
 }
 
 function getPropertyRow($propertyData, $fullPath)
 {
-    ['status' => $status, 'value' => $value] = $propertyData;
-    $fullName = implode('.', $fullPath);
+    $status = $propertyData['status'];
     $formatter = getPropertyFormatter($status);
 
-    return $formatter($fullName, $value, $fullPath);
-}
-
-function getPropertyFormatter($status)
-{
-    $statuses = [
-        STATUS_NEW => function ($name, $value) {
-            $nomalizedValue = prepareValue($value);
-            return "Property '$name' was added with value: '$nomalizedValue'";
-        },
-        STATUS_REMOVED => function ($name) {
-            return "Property '$name' was removed";
-        },
-        STATUS_UNCHANGED => function () {
-            return '';
-        },
-        STATUS_CHANGED => function ($name, $value) {
-            ['before' => $before, 'after' => $after] = $value;
-            $normalizedBefore = prepareValue($before);
-            $normalizedAfter = prepareValue($after);
-
-            return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
-        },
-        STATUS_COMPLEX => function ($name, $value, $fullPath) {
-            return getPropertiesRows($value, $fullPath);
-        }
-    ];
-
-    return $statuses[$status];
+    return $formatter($propertyData, $fullPath);
 }
 
 function prepareValue($value)
 {
     return is_array($value) ? 'complex value' : $value;
+}
+
+function getPropertyFormatter($status)
+{
+    $statuses = [
+        STATUS_NEW => function ($propertyData, $fullPath) {
+            $nomalizedValue = prepareValue($propertyData['value']);
+            $name = getFullName($fullPath);
+            return "Property '$name' was added with value: '$nomalizedValue'";
+        },
+        STATUS_REMOVED => function ($propertyData, $fullPath) {
+            $name = getFullName($fullPath);
+            return "Property '$name' was removed";
+        },
+        STATUS_UNCHANGED => function () {
+            return null;
+        },
+        STATUS_CHANGED => function ($propertyData, $fullPath) {
+            ['valueBefore' => $before, 'valueAfter' => $after] = $propertyData;
+            $normalizedBefore = prepareValue($before);
+            $normalizedAfter = prepareValue($after);
+            $name = getFullName($fullPath);
+
+            return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
+        },
+        STATUS_COMPLEX => function ($propertyData, $fullPath) {
+            return format($propertyData['children'], $fullPath);
+        }
+    ];
+
+    return $statuses[$status];
 }

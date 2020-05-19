@@ -2,7 +2,7 @@
     {
         "name": "common",
         "status": "complex",
-        "value": [
+        "children": [
             {
                 "name": "setting1",
                 "status": "unchanged",
@@ -42,14 +42,12 @@
     {
         "name": "group1",
         "status": "complex",
-        "value": [
+        "children": [
             {
                 "name": "baz",
                 "status": "changed",
-                "value": {
-                    "before": "bas",
-                    "after": "bars"
-                }
+                "valueBefore": "bas",
+                "valueAfter": "bars"
             },
             {
                 "name": "foo",

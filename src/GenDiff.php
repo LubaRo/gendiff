@@ -79,7 +79,7 @@ function buildAst(array $data1, array $data2): array
         if (is_array($data1[$key]) && is_array($data1[$key])) {
             return array_merge($common, [
                 'status' => STATUS_COMPLEX,
-                'value' =>  buildAst($data1[$key], $data2[$key])
+                'children' =>  buildAst($data1[$key], $data2[$key])
             ]);
         }
         if ($data1[$key] === $data2[$key]) {
@@ -91,10 +91,8 @@ function buildAst(array $data1, array $data2): array
 
         return array_merge($common, [
             'status' => STATUS_CHANGED,
-            'value' => [
-                'before' => $data1[$key],
-                'after' => $data2[$key]
-            ]
+            'valueBefore' => $data1[$key],
+            'valueAfter' => $data2[$key]
         ]);
     }, $properties);
 
