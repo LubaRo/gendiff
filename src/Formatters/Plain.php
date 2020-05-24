@@ -57,9 +57,7 @@ function getPropertyFormatter($status)
             $name = getFullName($fullPath);
             return "Property '$name' was removed";
         },
-        STATUS_UNCHANGED => function () {
-            return null;
-        },
+        STATUS_UNCHANGED => fn() => null,
         STATUS_CHANGED => function ($propertyData, $fullPath) {
             ['valueBefore' => $before, 'valueAfter' => $after] = $propertyData;
             $normalizedBefore = prepareValue($before);
@@ -68,9 +66,7 @@ function getPropertyFormatter($status)
 
             return "Property '$name' was changed. From '$normalizedBefore' to '$normalizedAfter'";
         },
-        STATUS_COMPLEX => function ($propertyData, $fullPath) {
-            return format($propertyData['children'], $fullPath);
-        }
+        STATUS_COMPLEX => fn($propertyData, $fullPath) => format($propertyData['children'], $fullPath)
     ];
 
     return $statuses[$status];
