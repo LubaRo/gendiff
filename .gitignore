@@ -3,3 +3,4 @@ logs
 *.swo
 *.swp
 *.cache
+clover.xml
