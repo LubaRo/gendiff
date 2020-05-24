@@ -1,4 +1,4 @@
-# php-project-lvl2
+# GenDiff
 
 ![CI](https://github.com/LubaRo/php-project-lvl2/workflows/CI/badge.svg?event=push)
 [![Maintainability](https://api.codeclimate.com/v1/badges/0dedae4f26b8efb383bc/maintainability)](https://codeclimate.com/github/LubaRo/php-project-lvl2/maintainability)
@@ -6,20 +6,18 @@
 [![Build Status](https://travis-ci.org/LubaRo/php-project-lvl2.svg?branch=master)](https://travis-ci.org/LubaRo/php-project-lvl2)
 
 
-**GenDiff** - the simple utility for finding differences in configuration files
+**GenDiff** is a simple utility for finding differences between two files.
 
-Find differences between two *json* files:<br>
-[![asciicast](https://asciinema.org/a/fSsmlVQLw5i8hRnIC8ovuJZLA.svg)](https://asciinema.org/a/fSsmlVQLw5i8hRnIC8ovuJZLA) 
+**Installation** (Composer required):
+`composer global require lubaro/gendiff`
 
-Find differences between two *yaml* files:<br>
-[![asciicast](https://asciinema.org/a/324314.svg)](https://asciinema.org/a/324314)
+Supports the next file extensions:
+- json
+- yaml
 
-Ability to compare nested structures:
-[![asciicast](https://asciinema.org/a/325168.svg)](https://asciinema.org/a/325168)
+Output report formats:
+- pretty
+- plain
+- json
 
-Available 'plain' output format:<br>
 [![asciicast](https://asciinema.org/a/325171.svg)](https://asciinema.org/a/325171)
-
-Available 'json' output format:<br>
-[![asciicast](https://asciinema.org/a/325271.svg)](https://asciinema.org/a/325271)
-
