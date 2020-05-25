@@ -6,23 +6,14 @@ use const Differ\GenDiff\{STATUS_NEW, STATUS_REMOVED, STATUS_CHANGED, STATUS_UNC
 
 function format($data, $path = [])
 {
-    $reduce  = function ($acc, $property) use (&$reduce, $path) {
-        $name = $property['name'];
+    $mappedProperties = array_map(function ($property) use ($path) {
+        ['status' => $status, 'name' => $name] = $property;
         $newPath = [...$path, $name];
 
-        $formattedProperty = getPropertyRow($property, $newPath);
-        $newAcc = is_array($formattedProperty) ? array_merge($acc, $formattedProperty) : [...$acc, $formattedProperty];
+        return formatProperty($property, $newPath);
+    }, $data);
 
-        return $newAcc;
-    };
-
-    $propertiesRows = array_reduce($data, function ($acc, $property) use ($reduce) {
-        return $reduce($acc, $property);
-    }, []);
-
-    $filteredRows = array_filter($propertiesRows, function ($elem) {
-        return !empty($elem);
-    });
+    $filteredRows = array_filter($mappedProperties, fn($elem) => !empty($elem));
 
     return implode("\n", $filteredRows);
 }
@@ -32,17 +23,17 @@ function getFullName($path)
     return implode('.', $path);
 }
 
-function getPropertyRow($propertyData, $fullPath)
+function prepareValue($value)
+{
+    return is_array($value) ? 'complex value' : $value;
+}
+
+function formatProperty($propertyData, $fullPath)
 {
     $status = $propertyData['status'];
     $formatter = getPropertyFormatter($status);
 
     return $formatter($propertyData, $fullPath);
-}
-
-function prepareValue($value)
-{
-    return is_array($value) ? 'complex value' : $value;
 }
 
 function getPropertyFormatter($status)
